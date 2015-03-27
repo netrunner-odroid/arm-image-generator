@@ -4,7 +4,6 @@ require 'open-uri'
 class RootFS
   def initialize(config)
     @c = config
-    system('sudo apt-get install qemu-user-static')
   end
   def install(d)
     @destination = d
