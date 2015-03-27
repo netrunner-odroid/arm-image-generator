@@ -1,0 +1,7 @@
+mklabel msdos
+w
+mkpart primary fat32 0 500
+mkpart primary ext4 501 -1
+w
+p
+q

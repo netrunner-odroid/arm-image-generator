@@ -1,0 +1,4 @@
+---
+  :rootfs: http://cdimage.ubuntu.com/ubuntu-core/daily/pending/vivid-core-armhf.tar.gz
+  :packages:
+    - ubuntu-standard
