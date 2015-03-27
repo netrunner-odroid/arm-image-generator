@@ -1,4 +1,11 @@
 ---
+  :release: vivid
   :rootfs: http://cdimage.ubuntu.com/ubuntu-core/daily/pending/vivid-core-armhf.tar.gz
+  :extra_repos:
+    :ppa:
   :packages:
     - ubuntu-standard
+    - software-properties-common
+  :login:
+    :username: user
+    :password: user

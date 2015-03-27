@@ -11,16 +11,17 @@ class Image
     @c = config
   end
 
-  def run!(file = 'debian.img', release = 'sid')
-    @file = file
-    @release = release
-    File.delete(file) if File.exist? file
+  def run!
+    @filename = "#{@c.config[:release]}.img"
+    File.delete(@filename) if File.exist? @filename
 
     # Create file
-    fail 'Cannot find qemu-img!' unless system("qemu-img create #{file} 8G")
+    fail 'Cannot find qemu-img!' unless system("qemu-img create #{@filename} 8G")
 
     # Partition
     partition
+
+    loop_mount_rootfs
 
     # Install rootfs
     install_rootfs
@@ -29,26 +30,28 @@ class Image
   def partition
     # Partition the image
     p = Parted.new
-    p.setup(@file)
+    p.setup(@filename)
+  end
+
+  def loop_mount_rootfs
+    # FIXME: Figure out how to not set a static file size here
+    @mntpt = `sudo losetup -o 500M -f --show #{@filename}`.strip
+    system("sudo mkfs.ext4 #{@mntpt}")
   end
 
   def install_rootfs
-    # FIXME: Figure out how to not set a static file size here
-    mntpt = `sudo losetup -o 500M -f --show #{@file}`.strip
-    system("sudo mkfs.ext4 #{mntpt}")
-
     Dir.mktmpdir do |d|
       begin
         fail 'Mounting failed!' unless system('/usr/bin/sudo',
                                               '/bin/mount',
-                                              mntpt,
+                                              @mntpt,
                                               d)
         r = RootFS.new(@c)
         r.install(d)
       ensure
         system("sudo umount #{d}")
         system("sudo losetup -d #{mntpt}")
-        puts "All done!"
+        puts 'Enjoy your raspberry pi image!'
       end
     end
   end

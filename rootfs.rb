@@ -4,6 +4,7 @@ require 'open-uri'
 class RootFS
   def initialize(config)
     @c = config
+    system('sudo apt-get install qemu-user-static')
   end
   def install(d)
     @destination = d
@@ -21,13 +22,17 @@ class RootFS
     `sudo tar xvf cache/rootfs.tar.gz -C #{@destination}`
     fail 'Could not untar the rootfs!' unless $?.success?
 
+    setup_chroot
     install_extra_packages
+  end
+
+  def setup_chroot
+    system("sudo cp /usr/bin/qemu-arm-static #{@destination}/usr/bin/qemu-arm-static")
+    system("sudo cp /etc/resolv.conf #{@destination}/etc/resolv.conf")
   end
 
   def install_extra_packages
     packages = @c.config[:packages].join(' ')
-    system("sudo cp /usr/bin/qemu-arm-static #{@destination}/usr/bin/qemu-arm-static")
-    system("sudo cp /etc/resolv.conf #{@destination}/etc/resolv.conf")
     system("sudo chroot #{@destination} /usr/bin/apt-get update")
     system("sudo chroot #{@destination} apt-get -y install #{packages}")
   end
