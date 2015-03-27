@@ -21,10 +21,11 @@ class Image
     # Partition
     partition
 
-    loop_mount_rootfs
+    # Setup boot partition
+    setup_bootloader
 
     # Install rootfs
-    install_rootfs
+    setup_rootfs
   end
 
   def partition
@@ -33,17 +34,26 @@ class Image
     p.setup(@filename)
   end
 
-  def loop_mount_rootfs
+  def setup_bootloader
+    puts 'Setting up the bootloader partition'
+    @bootloadermntpt = `losetup --sizelimit 500M #{@filename}`
+    system("sudo mkfs.vfat #{@bootloadermntpt}")
+  end
+
+  def setup_rootfs
+    puts 'Setting up the bootloader partition'
     # FIXME: Figure out how to not set a static file size here
     @mntpt = `sudo losetup -o 500M -f --show #{@filename}`.strip
     system("sudo mkfs.ext4 #{@mntpt}")
+
+    install_rootfs
   end
 
   def install_rootfs
     Dir.mktmpdir do |d|
       begin
-        fail 'Mounting failed!' unless system('/usr/bin/sudo',
-                                              '/bin/mount',
+        fail 'Mounting failed!' unless system('sudo',
+                                              'mount',
                                               @mntpt,
                                               d)
         r = RootFS.new(@c)
@@ -51,7 +61,6 @@ class Image
       ensure
         system("sudo umount #{d}")
         system("sudo losetup -d #{mntpt}")
-        puts 'Enjoy your raspberry pi image!'
       end
     end
   end
