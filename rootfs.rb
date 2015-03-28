@@ -66,5 +66,9 @@ class RootFS
     pswdcmd = "sh -c \"echo \"#{@c.config[:login][:password]}:#{@c.config[:login][:username]}\" | chpasswd\""
     system("sudo chroot #{@target} #{pswdcmd}")
     fail 'Could not add the user!' unless $?.success?
+
+    puts 'Adding user to sudo group'
+    system("sudo chroot #{@target} usermod -a -G sudo #{@c.config[:login][:username]}")
+    fail 'Could not add the user to the sudo group!' unless $?.success?
   end
 end

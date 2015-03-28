@@ -24,7 +24,7 @@ class Firmware
         File.write('firmware.tar.gz', open(@c.config[:firmware][:url]).read)
       end
       system('tar xf firmware.tar.gz -C firmware --strip-components=1')
-      system("sudo cp -aR firmware/boot/* #{target}/")
+      system("sudo cp -aR --no-preserve=all firmware/boot/* #{target}/")
     end
   end
 
