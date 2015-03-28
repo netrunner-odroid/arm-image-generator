@@ -21,15 +21,31 @@ class Image
                                                'create',
                                                "#{@filename}",
                                                "#{@c.config[:size]}")
-
     # Partition
     partition
+
+    # loop device setup
+    loop_setup
 
     # Setup boot partition
     setup_firmware
 
     # Install rootfs
     setup_rootfs
+
+    # loop device loop_teardown
+    loop_teardown
+  end
+
+  def loop_setup
+    @loop = `sudo losetup --show -f -P #{@filename}`.strip
+    fail 'Could not setup loop mounts.\
+          Make sure you have util-linux v2.21 or higher' if @loop.nil?
+  end
+
+  def loop_teardown
+    `sudo losetup -d #{@loop}`
+    fail 'Could not tear down loop mounts!' unless $?.success?
   end
 
   def partition
@@ -40,7 +56,8 @@ class Image
 
   def setup_firmware
     puts 'Setting up the bootloader partition'
-      @btldrmntpt = `sudo losetup -o 512 --sizelimit 500M -f --show #{@filename}`.strip
+    # FIXME: Hard coded for now
+    @btldrmntpt = "#{@loop}p1"
     system("sudo mkfs.vfat #{@btldrmntpt}")
     system("sudo fsck.vfat #{@btldrmntpt}")
     install_firmware
@@ -57,15 +74,14 @@ class Image
         r.install(d)
       ensure
         system("sudo umount #{d}")
-        system("sudo losetup -d #{@btldrmntpt}")
       end
     end
   end
 
   def setup_rootfs
     puts 'Setting up the bootloader partition'
-    # FIXME: Figure out how to not set a static file size here
-    @rootfsmntpt = `sudo losetup -o 500M -f --show #{@filename}`.strip
+    # FIXME: Hard coded for now
+    @rootfsmntpt = "#{@loop}p2"
     system("sudo mkfs.ext4 #{@rootfsmntpt}")
     system("sudo fsck.ext4 #{@rootfsmntpt}")
     install_rootfs
@@ -82,7 +98,6 @@ class Image
         r.install(d)
       ensure
         system("sudo umount #{d}")
-        system("sudo losetup -d #{@rootfsmntpt}")
       end
     end
   end
