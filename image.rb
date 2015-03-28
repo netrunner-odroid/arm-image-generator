@@ -1,6 +1,7 @@
 require_relative 'parted'
 require_relative 'imageconfig'
 require_relative 'rootfs'
+require_relative 'firmware'
 
 require 'tmpdir'
 
@@ -22,7 +23,7 @@ class Image
     partition
 
     # Setup boot partition
-    setup_bootloader
+    setup_firmware
 
     # Install rootfs
     setup_rootfs
@@ -34,10 +35,27 @@ class Image
     p.setup(@filename)
   end
 
-  def setup_bootloader
+  def setup_firmware
     puts 'Setting up the bootloader partition'
       @btldrmntpt = `sudo losetup -o 512 --sizelimit 500M -f --show #{@filename}`.strip
-    system("sudo mkfs.vfat #{@btldrmntpt}")
+    system("sudo mkfs.vfat -F 32 #{@btldrmntpt}")
+    install_firmware
+  end
+
+  def install_firmware
+    Dir.mktmpdir do |d|
+      begin
+        fail 'Mounting failed!' unless system('sudo',
+                                              'mount',
+                                              @btldrmntpt,
+                                              d)
+        r = Firmware.new(@c)
+        r.install(d)
+      ensure
+        system("sudo umount #{d}")
+        system("sudo losetup -d #{@btldrmntpt}")
+      end
+    end
   end
 
   def setup_rootfs
@@ -61,7 +79,6 @@ class Image
       ensure
         system("sudo umount #{d}")
         system("sudo losetup -d #{@rootfsmntpt}")
-        system("sudo losetup -d #{@btldrmntpt}")
       end
     end
   end

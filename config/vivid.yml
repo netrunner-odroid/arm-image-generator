@@ -1,6 +1,10 @@
 ---
   :release: vivid
-  :rootfs: http://cdimage.ubuntu.com/ubuntu-core/daily/pending/vivid-core-armhf.tar.gz
+  :rootfs:
+    :url: http://cdimage.ubuntu.com/ubuntu-core/daily/pending/vivid-core-armhf.tar.gz
+    :md5sum: 4754283da2f52e0782fc45ec20f5007e
+  :firmware:
+    :url: https://github.com/raspberrypi/firmware/archive/master.tar.gz
   :login:
     :username: ubuntu
     :password: ubuntu
