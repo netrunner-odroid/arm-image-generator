@@ -36,15 +36,15 @@ class Image
 
   def setup_bootloader
     puts 'Setting up the bootloader partition'
-    @bootloadermntpt = `losetup --sizelimit 500M #{@filename}`
-    system("sudo mkfs.vfat #{@bootloadermntpt}")
+      @btldrmntpt = `sudo losetup -o 512 --sizelimit 500M -f --show #{@filename}`.strip
+    system("sudo mkfs.vfat #{@btldrmntpt}")
   end
 
   def setup_rootfs
     puts 'Setting up the bootloader partition'
     # FIXME: Figure out how to not set a static file size here
-    @mntpt = `sudo losetup -o 500M -f --show #{@filename}`.strip
-    system("sudo mkfs.ext4 #{@mntpt}")
+    @rootfsmntpt = `sudo losetup -o 500M -f --show #{@filename}`.strip
+    system("sudo mkfs.ext4 #{@rootfsmntpt}")
 
     install_rootfs
   end
@@ -54,13 +54,14 @@ class Image
       begin
         fail 'Mounting failed!' unless system('sudo',
                                               'mount',
-                                              @mntpt,
+                                              @rootfsmntpt,
                                               d)
         r = RootFS.new(@c)
         r.install(d)
       ensure
         system("sudo umount #{d}")
-        system("sudo losetup -d #{mntpt}")
+        system("sudo losetup -d #{@rootfsmntpt}")
+        system("sudo losetup -d #{@btldrmntpt}")
       end
     end
   end

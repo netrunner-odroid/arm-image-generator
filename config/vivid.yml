@@ -2,5 +2,5 @@
   :release: vivid
   :rootfs: http://cdimage.ubuntu.com/ubuntu-core/daily/pending/vivid-core-armhf.tar.gz
   :login:
-    :username: user
-    :password: user
+    :username: ubuntu
+    :password: ubuntu
