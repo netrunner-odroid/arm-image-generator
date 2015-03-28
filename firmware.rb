@@ -25,6 +25,7 @@ class Firmware
       end
       system('tar xf firmware.tar.gz -C firmware --strip-components=1')
       system("sudo cp -aR --no-preserve=all firmware/boot/* #{target}/")
+      fail 'Could not copy over firmware files!' unless $?.success?
     end
   end
 
