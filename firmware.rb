@@ -27,6 +27,9 @@ class Firmware
       system("sudo cp -aR --no-preserve=all firmware/boot/* #{target}/")
       fail 'Could not copy over firmware files!' unless $?.success?
     end
+
+    # Config files that are required at boottime
+    system("sudo cp -aR --no-preserve=all #{Dir.pwd}/data/firmware/* #{target}/")
   end
 
   def checksum
