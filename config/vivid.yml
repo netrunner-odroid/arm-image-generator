@@ -10,3 +10,5 @@
   :login:
     :username: ubuntu
     :password: ubuntu
+    :groups:
+      - sudo
