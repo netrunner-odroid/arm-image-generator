@@ -22,8 +22,8 @@ class RootFS
         File.write('rootfs.tar.gz', open(@c.config[:rootfs][:url]).read)
       end
       checksum
-      # tar spits out a whole bunch of stuff that I don't care about
-      `sudo tar xvf rootfs.tar.gz -C #{@target}`
+
+      system("sudo tar xf rootfs.tar.gz -C #{@target}")
       fail 'Could not untar the rootfs!' unless $?.success?
     end
 

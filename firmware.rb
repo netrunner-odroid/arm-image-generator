@@ -23,8 +23,8 @@ class Firmware
       unless File.exist? 'firmware.tar.gz'
         File.write('firmware.tar.gz', open(@c.config[:firmware][:url]).read)
       end
-      `tar xvf firmware.tar.gz -C firmware --strip-components=1`
-      system("sudo cp -avR firmware/boot/* #{target}/")
+      system('tar xf firmware.tar.gz -C firmware --strip-components=1')
+      system("sudo cp -aR firmware/boot/* #{target}/")
     end
   end
 
