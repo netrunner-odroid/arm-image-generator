@@ -38,7 +38,7 @@ class Image
   def setup_firmware
     puts 'Setting up the bootloader partition'
       @btldrmntpt = `sudo losetup -o 512 --sizelimit 500M -f --show #{@filename}`.strip
-    system("sudo mkfs.vfat -F 32 #{@btldrmntpt}")
+    system("sudo mkfs.vfat #{@btldrmntpt}")
     install_firmware
   end
 
