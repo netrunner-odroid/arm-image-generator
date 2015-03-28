@@ -42,6 +42,7 @@ class Image
     puts 'Setting up the bootloader partition'
       @btldrmntpt = `sudo losetup -o 512 --sizelimit 500M -f --show #{@filename}`.strip
     system("sudo mkfs.vfat #{@btldrmntpt}")
+    system("sudo fsck.vfat #{@btldrmntpt}")
     install_firmware
   end
 
@@ -66,7 +67,7 @@ class Image
     # FIXME: Figure out how to not set a static file size here
     @rootfsmntpt = `sudo losetup -o 500M -f --show #{@filename}`.strip
     system("sudo mkfs.ext4 #{@rootfsmntpt}")
-
+    system("sudo fsck.ext4 #{@rootfsmntpt}")
     install_rootfs
   end
 

@@ -18,7 +18,7 @@ class RootFS
     puts 'Downloading the rootfs'
     Dir.chdir('cache') do
       # FIXME: Assume tar.gz format for now
-      unless File.exist? 'cache/rootfs.tar.gz'
+      unless File.exist? 'rootfs.tar.gz'
         File.write('rootfs.tar.gz', open(@c.config[:rootfs][:url]).read)
       end
       checksum

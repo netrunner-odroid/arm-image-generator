@@ -1,7 +1,7 @@
 mklabel msdos
 mkpart primary fat32 0% 5%
 align-check optimal 1
-mkpart primary ext4 5% 100%
+mkpart primary ext4 5% -1s
 align-check optimal 2
 p
 q
