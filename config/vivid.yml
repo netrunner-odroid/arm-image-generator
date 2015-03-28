@@ -1,5 +1,6 @@
 ---
   :release: vivid
+  :size: 8G
   :rootfs:
     :url: http://cdimage.ubuntu.com/ubuntu-core/releases/15.04/beta-2/ubuntu-core-15.04-beta2-core-armhf.tar.gz
     :md5sum: 4754283da2f52e0782fc45ec20f5007e

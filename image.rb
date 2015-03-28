@@ -17,7 +17,10 @@ class Image
     File.delete(@filename) if File.exist? @filename
 
     # Create file
-    fail 'Cannot find qemu-img!' unless system("qemu-img create #{@filename} 8G")
+    fail 'Cannot find qemu-img!' unless system('qemu-img',
+                                               'create',
+                                               "#{@filename}",
+                                               "#{@c.config[:size]}")
 
     # Partition
     partition
