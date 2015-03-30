@@ -18,10 +18,7 @@ class RootFS
     puts 'Downloading the rootfs'
     # FIXME: Assume tar.gz format for now
     unless checksum_matches?
-      unless File.exist? 'cache/rootfs.tar.gz'
-        File.write('cache/rootfs.tar.gz', open(@c.config[:rootfs][:url]).read)
-      end
-
+      File.write('cache/rootfs.tar.gz', open(@c.config[:rootfs][:url]).read)
       fail 'Checksum failed to match' unless checksum_matches?
     end
 
@@ -38,8 +35,6 @@ class RootFS
 
   def checksum_matches?
     return true if @c.config[:rootfs][:md5sum].nil?
-
-    puts Dir.pwd
     sum = Digest::MD5.file('cache/rootfs.tar.gz').hexdigest
     @c.config[:rootfs][:md5sum] == sum
   end
