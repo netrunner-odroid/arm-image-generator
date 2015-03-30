@@ -16,16 +16,17 @@ class RootFS
     Dir.mkdir('cache') unless Dir.exist?('cache')
 
     puts 'Downloading the rootfs'
-    Dir.chdir('cache') do
-      # FIXME: Assume tar.gz format for now
-      unless File.exist? 'rootfs.tar.gz'
-        File.write('rootfs.tar.gz', open(@c.config[:rootfs][:url]).read)
+    # FIXME: Assume tar.gz format for now
+    unless checksum_matches?
+      unless File.exist? 'cache/rootfs.tar.gz'
+        File.write('cache/rootfs.tar.gz', open(@c.config[:rootfs][:url]).read)
       end
-      checksum
 
-      system("sudo tar xf rootfs.tar.gz -C #{@target}")
-      fail 'Could not untar the rootfs!' unless $?.success?
+      fail 'Checksum failed to match' unless checksum_matches?
     end
+
+    system("sudo tar xf cache/rootfs.tar.gz -C #{@target}")
+    fail 'Could not untar the rootfs!' unless $?.success?
 
     begin
       mount
@@ -35,11 +36,12 @@ class RootFS
     end
   end
 
-  def checksum
-    return if @c.config[:rootfs][:md5sum].nil?
+  def checksum_matches?
+    return true if @c.config[:rootfs][:md5sum].nil?
 
-    sum = Digest::MD5.file('rootfs.tar.gz').hexdigest
-    fail 'MD5SUM does not match' unless @c.config[:rootfs][:md5sum] == sum
+    puts Dir.pwd
+    sum = Digest::MD5.file('cache/rootfs.tar.gz').hexdigest
+    @c.config[:rootfs][:md5sum] == sum
   end
 
   def mount
