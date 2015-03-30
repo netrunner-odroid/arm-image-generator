@@ -21,20 +21,19 @@ class Image
                                                'create',
                                                "#{@filename}",
                                                "#{@c.config[:size]}")
-    # Partition
-    partition
-
-    # loop device setup
-    loop_setup
-
-    # Setup boot partition
-    setup_firmware
-
-    # Install rootfs
-    setup_rootfs
-
-    # loop device loop_teardown
-    loop_teardown
+    begin
+      # Partition
+      partition
+      # loop device setup
+      loop_setup
+      # Setup boot partition
+      setup_firmware
+      # Install rootfs
+      setup_rootfs
+    ensure
+      # loop device loop_teardown
+      loop_teardown
+    end
   end
 
   def loop_setup
