@@ -9,3 +9,9 @@ The simplest way to run get a image is to call :
 ```
 
 where CONFIG.yml is one of the various configs under the config dir
+
+## Licensing ##
+
+Everything is distributed under GPLv2.
+
+See the COPYING file for the full license.
