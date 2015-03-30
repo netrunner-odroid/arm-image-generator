@@ -57,6 +57,10 @@ class RootFS
   end
 
   def configure
+    configure_login if @c.config.keys.include? :login
+  end
+
+  def configure_login
     puts "Adding user #{@c.config[:login][:username]}"
     system("sudo chroot #{@target} useradd #{@c.config[:login][:username]}")
     fail 'Could not add the user!' unless $?.success?
