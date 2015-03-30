@@ -19,23 +19,24 @@ class Firmware
     puts 'Downloading firmware.tar.gz'
 
     # FIXME: Assume tar.gz format for now
-    Dir.chdir('cache') do
-      unless File.exist? 'firmware.tar.gz'
-        File.write('firmware.tar.gz', open(@c.config[:firmware][:url]).read)
-      end
-      system('tar xf firmware.tar.gz -C firmware --strip-components=1')
-      system("sudo cp -aR --no-preserve=all firmware/boot/* #{target}/")
-      fail 'Could not copy over firmware files!' unless $?.success?
+    unless checksum_matches?
+      File.write('firmware.tar.gz', open(@c.config[:firmware][:url]).read)
     end
 
+    fail 'Checksum failed to match' unless checksum_matches?
+
+    system('tar xf cache/firmware.tar.gz -C cache/firmware --strip-components=1')
+    system("sudo cp -aR --no-preserve=all cache/firmware/boot/* #{target}/")
+    fail 'Could not copy over firmware files!' unless $?.success?
+
     # Config files that are required at boottime
-    system("sudo cp -aR --no-preserve=all #{Dir.pwd}/data/firmware/* #{target}/")
+    system("sudo cp -aR --no-preserve=all data/firmware/* #{target}/")
   end
 
-  def checksum
-    return if @c.config[:firmware][:md5sum].nil?
+  def checksum_matches?
+    return true if @c.config[:firmware][:md5sum].nil?
 
     sum = Digest::MD5.file('cache/firmware.tar.gz').hexdigest
-    fail 'MD5SUM does not match' unless @c.config[:firmware][:md5sum] == sum
+    @c.config[:firmware][:md5sum] == sum
   end
 end
