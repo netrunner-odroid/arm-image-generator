@@ -17,9 +17,13 @@ class RootFS
 
     puts 'Downloading the rootfs'
     # FIXME: Assume tar.gz format for now
-    unless checksum_matches?
-      File.write('cache/rootfs.tar.gz', open(@c.config[:rootfs][:url]).read)
+    begin
+      unless File.exist?('cache/rootfs.tar.gz') && checksum_matches?
+        File.write('cache/rootfs.tar.gz', open(@c.config[:rootfs][:url]).read)
+      end
       fail 'Checksum failed to match' unless checksum_matches?
+    rescue => e
+      puts "Retrying download because #{e}"
     end
 
     system("sudo tar xf cache/rootfs.tar.gz -C #{@target}")

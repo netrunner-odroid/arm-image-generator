@@ -19,11 +19,15 @@ class Firmware
     puts 'Downloading firmware.tar.gz'
 
     # FIXME: Assume tar.gz format for now
-    unless checksum_matches?
-      File.write('firmware.tar.gz', open(@c.config[:firmware][:url]).read)
+    begin
+      unless File.exist?('cache/firmware.tar.gz') && checksum_matches?
+        File.write('cache/firmware.tar.gz', open(@c.config[:firmware][:url]).read)
+      end
+      fail 'Checksum failed to match' unless checksum_matches?
+    rescue => e
+      puts "Retrying download because #{e}"
+      retry
     end
-
-    fail 'Checksum failed to match' unless checksum_matches?
 
     system('tar xf cache/firmware.tar.gz -C cache/firmware --strip-components=1')
     system("sudo cp -aR --no-preserve=all cache/firmware/boot/* #{target}/")
