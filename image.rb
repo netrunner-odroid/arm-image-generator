@@ -39,7 +39,7 @@ class Image
   def loop_setup
     @loop = `sudo losetup --show -f -P #{@filename}`.strip
     fail 'Could not setup loop mounts.\
-          Make sure you have util-linux v2.21 or higher' if @loop.nil?
+          Make sure you have util-linux v2.21 or higher' unless $?.success?
   end
 
   def loop_teardown
