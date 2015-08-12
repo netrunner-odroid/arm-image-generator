@@ -26,10 +26,10 @@ class Image
       partition
       # loop device setup
       loop_setup
-      # Setup boot partition
-      setup_firmware
       # Install rootfs
       setup_rootfs
+      # Setup firmware and other stuff
+      setup_firmware
     ensure
       # loop device loop_teardown
       loop_teardown
@@ -38,6 +38,11 @@ class Image
 
   def loop_setup
     @loop = `sudo losetup --show -f -P #{@filename}`.strip
+
+    # FIXME: Hard coded for now
+    @btldrmntpt  = "#{@loop}p1"
+    @rootfsmntpt = "#{@loop}p2"
+
     fail 'Could not setup loop mounts.\
           Make sure you have util-linux v2.21 or higher' unless $?.success?
   end
@@ -55,32 +60,36 @@ class Image
 
   def setup_firmware
     puts 'Setting up the bootloader partition'
-    # FIXME: Hard coded for now
-    @btldrmntpt = "#{@loop}p1"
     system("sudo mkfs.vfat #{@btldrmntpt}")
     system("sudo fsck.vfat #{@btldrmntpt}")
     install_firmware
   end
 
   def install_firmware
-    Dir.mktmpdir do |d|
-      begin
-        fail 'Mounting failed!' unless system('sudo',
-                                              'mount',
-                                              @btldrmntpt,
-                                              d)
-        r = Firmware.new(@c)
-        r.install(d)
-      ensure
-        system("sudo umount #{d}")
-      end
+    boot_dir = Dir.mktmpdir
+    rootfs_dir = Dir.mktmpdir
+    t = {}
+    begin
+      fail 'Mounting boot partition failed!' unless system('sudo',
+                                                           'mount',
+                                                           @btldrmntpt,
+                                                           boot_dir)
+      fail 'Mounting rootfs partition failed' unless system('sudo',
+                                                            'mount',
+                                                            @rootfsmntpt,
+                                                            rootfs_dir)
+      r = Firmware.new(@c)
+      t[:boot] = boot_dir
+      t[:modules] = "#{rootfs_dir}/lib/modules/"
+      r.install(t)
+    ensure
+      system('sudo', 'umount', boot_dir)
+      system('sudo', 'umount', rootfs_dir)
     end
   end
 
   def setup_rootfs
     puts 'Setting up the bootloader partition'
-    # FIXME: Hard coded for now
-    @rootfsmntpt = "#{@loop}p2"
     system("sudo mkfs.ext4 #{@rootfsmntpt}")
     system("sudo fsck.ext4 #{@rootfsmntpt}")
     install_rootfs

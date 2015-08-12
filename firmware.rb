@@ -6,15 +6,18 @@ require 'digest'
 
 # Class to handle firmware installation
 class Firmware
+  FIRMWARE_DIR = 'cache/firmware'
+
   def initialize(config)
     @c = config
   end
 
   def install(target)
-    @target = target
+    @boot = target[:boot]
+    @modules = target[:modules]
 
-    FileUtils.rm_rf('cache/firmware')
-    FileUtils.mkdir_p('cache/firmware')
+    FileUtils.rm_rf(FIRMWARE_DIR)
+    FileUtils.mkdir_p(FIRMWARE_DIR)
 
     puts 'Downloading firmware.tar.gz'
 
@@ -29,14 +32,28 @@ class Firmware
       retry
     end
 
-    system('tar xf cache/firmware.tar.gz -C cache/firmware --strip-components=1')
-    system("sudo cp -aR --no-preserve=all cache/firmware/boot/* #{target}/")
+    system("tar xf cache/firmware.tar.gz -C #{FIRMWARE_DIR} --strip-components=1")
+    system("sudo cp -aR --no-preserve=all #{FIRMWARE_DIR}/boot/* #{@boot}/")
     fail 'Could not copy over firmware files!' unless $?.success?
 
     # Config files that are required at boottime
-    system("sudo cp -aR --no-preserve=all data/firmware/* #{target}/")
+    system("sudo cp -aR --no-preserve=all data/firmware/* #{@boot}/")
+    install_kernel_modules
   end
 
+  def install_kernel_modules
+    unless Dir.exist? "#{FIRMWARE_DIR}/modules"
+      puts 'No kernel modules found in the firmware tarball!'
+      return
+    end
+
+    fail 'Failed to create modules dir!' unless system("sudo mkdir -p #{@modules}")
+     rsync("#{FIRMWARE_DIR}/modules/*", "#{@modules}")
+  end
+
+  def rsync(src, target)
+    system("sudo rsync -r -t -p -o -g -x --delete -l -H -D --numeric-ids -s #{src} #{target}")
+  end
   def checksum_matches?
     return true if @c.config[:firmware][:md5sum].nil?
 
