@@ -2,8 +2,8 @@
   :release: vivid
   :size: 4G
   :rootfs:
-    :url: http://cdimage.ubuntu.com/ubuntu-core/releases/15.04/beta-2/ubuntu-core-15.04-beta2-core-armhf.tar.gz
-    :md5sum: 4754283da2f52e0782fc45ec20f5007e
+    :url: http://cdimage.ubuntu.com/ubuntu-core/releases/15.04/release/ubuntu-core-15.04-core-armhf.tar.gz
+    :md5sum: 4db23d435fc00317798d209cb709fc8d
   :firmware:
     :url: https://github.com/raspberrypi/firmware/archive/master.tar.gz
     :md5sum: 966a1290fce16161a15700b7f749df65
