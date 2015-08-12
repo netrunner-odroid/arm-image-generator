@@ -8,7 +8,7 @@ class RootFS
   def initialize(config)
     @c = config
     @dev = %w(sys proc dev)
-    system('sudo apt-get install qemu-user-static')
+    system('sudo apt-get -qq -y install qemu-user-static')
   end
 
   def install(d)

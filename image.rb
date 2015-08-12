@@ -2,6 +2,7 @@ require_relative 'parted'
 require_relative 'imageconfig'
 require_relative 'rootfs'
 require_relative 'firmware'
+require_relative 'lib/mount'
 
 require 'tmpdir'
 
@@ -66,47 +67,28 @@ class Image
   end
 
   def install_firmware
-    boot_dir = Dir.mktmpdir
-    rootfs_dir = Dir.mktmpdir
     t = {}
-    begin
-      fail 'Mounting boot partition failed!' unless system('sudo',
-                                                           'mount',
-                                                           @btldrmntpt,
-                                                           boot_dir)
-      fail 'Mounting rootfs partition failed' unless system('sudo',
-                                                            'mount',
-                                                            @rootfsmntpt,
-                                                            rootfs_dir)
-      r = Firmware.new(@c)
-      t[:boot] = boot_dir
-      t[:modules] = "#{rootfs_dir}/lib/modules/"
-      r.install(t)
-    ensure
-      system('sudo', 'umount', boot_dir)
-      system('sudo', 'umount', rootfs_dir)
+    Mount.mount(@btldrmntpt) do |boot_dir|
+      Mount.mount(@rootfsmntpt) do |rootfs_dir|
+        r = Firmware.new(@c)
+        t[:boot] = boot_dir
+        t[:modules] = "#{rootfs_dir}/lib/modules/"
+        r.install(t)
+      end
     end
   end
 
   def setup_rootfs
-    puts 'Setting up the bootloader partition'
+    puts 'Setting up the rootfs partition'
     system("sudo mkfs.ext4 #{@rootfsmntpt}")
     system("sudo fsck.ext4 #{@rootfsmntpt}")
     install_rootfs
   end
 
   def install_rootfs
-    Dir.mktmpdir do |d|
-      begin
-        fail 'Mounting failed!' unless system('sudo',
-                                              'mount',
-                                              @rootfsmntpt,
-                                              d)
-        r = RootFS.new(@c)
-        r.install(d)
-      ensure
-        system("sudo umount #{d}")
-      end
+    Mount.mount(@rootfsmntpt) do |d|
+      r = RootFS.new(@c)
+      r.install(d)
     end
   end
 end
