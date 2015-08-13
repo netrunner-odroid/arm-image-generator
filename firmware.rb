@@ -47,7 +47,8 @@ class Firmware
       return
     end
 
-    fail 'Failed to create modules dir!' unless system("sudo mkdir -p #{@modules}")
+    fail 'Failed to create modules dir!' unless system("sudo mkdir -p #{@libdir}/modules")
+    fail 'Failed to create modules dir!' unless system("sudo mkdir -p #{@libdir}/firmware")
     rsync("#{FIRMWARE_DIR}/modules/*", "#{@libdir}/modules/")
     rsync("#{FIRMWARE_DIR}/firmware/*", "#{@libdir}/firmware/")
   end
