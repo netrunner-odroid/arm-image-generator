@@ -72,7 +72,7 @@ class Image
       Mount.mount(@rootfsmntpt) do |rootfs_dir|
         r = Firmware.new(@c)
         t[:boot] = boot_dir
-        t[:modules] = "#{rootfs_dir}/lib/modules/"
+        t[:libdir] = "#{rootfs_dir}/lib/"
         r.install(t)
       end
     end

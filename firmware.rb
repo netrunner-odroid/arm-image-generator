@@ -14,7 +14,7 @@ class Firmware
 
   def install(target)
     @boot = target[:boot]
-    @modules = target[:modules]
+    @libdir = target[:libdir]
 
     FileUtils.rm_rf(FIRMWARE_DIR)
     FileUtils.mkdir_p(FIRMWARE_DIR)
@@ -48,10 +48,12 @@ class Firmware
     end
 
     fail 'Failed to create modules dir!' unless system("sudo mkdir -p #{@modules}")
-     rsync("#{FIRMWARE_DIR}/modules/*", "#{@modules}")
+    rsync("#{FIRMWARE_DIR}/modules/*", "#{@libdir}/modules/")
+    rsync("#{FIRMWARE_DIR}/firmware/*", "#{@libdir}/firmware/")
   end
 
   def rsync(src, target)
+    return unless Dir.exist? src
     system("sudo rsync -r -t -p -o -g -x --delete -l -H -D --numeric-ids -s #{src} #{target}")
   end
   def checksum_matches?
