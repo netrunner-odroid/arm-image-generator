@@ -1,0 +1,15 @@
+---
+  :release: vivid
+  :size: 4G
+  :parted: parted.txt
+  :rootfs:
+    :url: http://cdimage.ubuntu.com/ubuntu-core/releases/15.04/release/ubuntu-core-15.04-core-armhf.tar.gz
+    :md5sum: 4db23d435fc00317798d209cb709fc8d
+  :firmware:
+    :url: https://github.com/shadeslayer/cubox_prebuilt/archive/master.tar.gz
+    :md5sum: 3fe2e9174ecc1cfe1faa365ca9948c1d
+  :login:
+    :username: ubuntu
+    :password: ubuntu
+    :groups:
+      - sudo
