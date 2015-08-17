@@ -13,6 +13,8 @@ class Firmware
   end
 
   def install(target)
+    return unless @c.config[:firmware]
+
     @boot = target[:boot]
     @libdir = target[:libdir]
 

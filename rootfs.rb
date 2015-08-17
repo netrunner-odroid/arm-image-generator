@@ -11,8 +11,10 @@ class RootFS
     system('sudo apt-get -qq -y install qemu-user-static')
   end
 
-  def install(d)
-    @target = d
+  def install(target)
+    return unless @c.config[:rootfs]
+
+    @target = target
     Dir.mkdir('cache') unless Dir.exist?('cache')
 
     puts 'Downloading the rootfs'
