@@ -8,12 +8,11 @@ require 'optparse'
 options = {}
 OptionParser.new do |opts|
   opts.banner = 'Usage: run.rb -c CONFIG'
-  opts.on('-cCONFIG', '--config=CONFIG', 'Config file to build') do |c|
-    options[:config] = c
+  opts.on('-cCONFIG', '--config=CONFIG', 'Config directory') do |c|
+    options[:config_dir] = c
   end
 end.parse!
 
-c = ImageConfig.new(options[:config])
-
+c = ImageConfig.new(options[:config_dir])
 i = Image.new(c)
 i.run!

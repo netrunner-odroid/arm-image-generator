@@ -20,6 +20,7 @@ class Firmware
     FileUtils.mkdir_p(FIRMWARE_DIR)
 
     puts 'Downloading firmware.tar.gz'
+    retry_times = 0
 
     # FIXME: Assume tar.gz format for now
     begin
@@ -29,7 +30,8 @@ class Firmware
       fail 'Checksum failed to match' unless checksum_matches?
     rescue => e
       puts "Retrying download because #{e}"
-      retry
+      retry_times += 1
+      retry if retry_times < 3
     end
 
     system("tar xf cache/firmware.tar.gz -C #{FIRMWARE_DIR} --strip-components=1")

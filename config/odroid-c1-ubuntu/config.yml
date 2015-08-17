@@ -1,12 +1,13 @@
 ---
   :release: vivid
   :size: 4G
+  :parted: parted.txt
   :rootfs:
     :url: http://cdimage.ubuntu.com/ubuntu-core/releases/15.04/release/ubuntu-core-15.04-core-armhf.tar.gz
     :md5sum: 4db23d435fc00317798d209cb709fc8d
   :firmware:
-    :url: https://github.com/raspberrypi/firmware/archive/master.tar.gz
-    :md5sum: 2800f7493f2ed4a7fea12baa919641a3
+    :url: https://github.com/netrunner-arm/c1_prebuilt/archive/master.tar.gz
+    :md5sum: 74f3a83b7024dc11bec9f8854183d90f
   :login:
     :username: ubuntu
     :password: ubuntu

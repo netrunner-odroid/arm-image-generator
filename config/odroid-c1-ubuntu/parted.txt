@@ -1,0 +1,7 @@
+mklabel msdos
+mkpart primary fat32 3072s 266239s
+align-check optimal 1
+mkpart primary ext4 266240s -1s
+align-check optimal 2
+p
+q

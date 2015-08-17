@@ -55,7 +55,7 @@ class Image
 
   def partition
     # Partition the image
-    p = Parted.new
+    p = Parted.new(@c)
     p.setup(@filename)
   end
 
