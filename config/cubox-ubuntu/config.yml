@@ -3,8 +3,8 @@
   :size: 4G
   :parted: parted.txt
   :rootfs:
-    :url: http://cdimage.ubuntu.com/ubuntu-core/releases/15.04/release/ubuntu-core-15.04-core-armhf.tar.gz
-    :md5sum: 4db23d435fc00317798d209cb709fc8d
+    :url: https://releases.linaro.org/15.06/ubuntu/vivid-images/nano/linaro-vivid-nano-20150618-705.tar.gz
+    :md5sum: c23a923bd8983a3ae8ce710d601983c2
   :firmware:
     :url: https://github.com/shadeslayer/cubox_prebuilt/archive/master.tar.gz
     :md5sum: 3fe2e9174ecc1cfe1faa365ca9948c1d
