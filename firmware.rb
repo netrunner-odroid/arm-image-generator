@@ -40,27 +40,21 @@ class Firmware
     system("sudo cp -aR --no-preserve=all #{FIRMWARE_DIR}/boot/* #{@boot}/")
     fail 'Could not copy over firmware files!' unless $?.success?
 
-    # Config files that are required at boottime
-    system("sudo cp -aR --no-preserve=all data/firmware/* #{@boot}/")
     install_kernel_modules
   end
 
   def install_kernel_modules
-    unless Dir.exist? "#{FIRMWARE_DIR}/modules"
-      puts 'No kernel modules found in the firmware tarball!'
-      return
-    end
-
     fail 'Failed to create modules dir!' unless system("sudo mkdir -p #{@libdir}/modules")
     fail 'Failed to create modules dir!' unless system("sudo mkdir -p #{@libdir}/firmware")
-    rsync("#{FIRMWARE_DIR}/modules/*", "#{@libdir}/modules/")
-    rsync("#{FIRMWARE_DIR}/firmware/*", "#{@libdir}/firmware/")
+    rsync("#{FIRMWARE_DIR}/modules/", "#{@libdir}/modules/")
+    rsync("#{FIRMWARE_DIR}/firmware/", "#{@libdir}/firmware/")
   end
 
   def rsync(src, target)
     return unless Dir.exist? src
     system("sudo rsync -r -t -p -o -g -x --delete -l -H -D --numeric-ids -s #{src} #{target}")
   end
+
   def checksum_matches?
     return true if @c.config[:firmware][:md5sum].nil?
 
