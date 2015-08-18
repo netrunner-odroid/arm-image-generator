@@ -2,7 +2,8 @@ require_relative 'imageconfig'
 
 require 'open-uri'
 require 'digest'
-
+require 'rubygems/package'
+require 'zlib'
 
 class RootFS
   def initialize(config)
@@ -15,6 +16,7 @@ class RootFS
     return unless @c.config[:rootfs]
 
     @target = target
+    retry_times = 0
     Dir.mkdir('cache') unless Dir.exist?('cache')
 
     puts 'Downloading the rootfs'
@@ -26,10 +28,18 @@ class RootFS
       fail 'Checksum failed to match' unless checksum_matches?
     rescue => e
       puts "Retrying download because #{e}"
+      retry_times += 1
+      retry if retry_times < 3
     end
 
-    system("sudo tar xf cache/rootfs.tar.gz -C #{@target}")
-    fail 'Could not untar the rootfs!' unless $?.success?
+    # FIXME: This should be really be a bit more properly tuned
+    tar = Gem::Package::TarReader.new(Zlib::GzipReader.open('cache/rootfs.tar.gz'))
+    tar.rewind
+    useradd = tar.select { |e| e if e.full_name.include? 'useradd' }[0]
+    tar.close
+    components = useradd.full_name.split('usr')[0].split('/').count
+    ec = system("sudo tar xf cache/rootfs.tar.gz -C #{@target} --strip-components #{components}")
+    fail 'Could not untar the rootfs!' unless ec
 
     begin
       mount
