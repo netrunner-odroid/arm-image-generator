@@ -31,6 +31,8 @@ class Image
       setup_rootfs
       # Setup firmware and other stuff
       setup_firmware
+      # Setup bootloader
+      setup_btldr
     ensure
       # loop device loop_teardown
       loop_teardown
@@ -39,14 +41,22 @@ class Image
 
   def loop_setup
     @loop = `sudo losetup --show -f -P #{@filename}`.strip
-    `sudo partprobe #{@loop}`
-
-    # FIXME: Hard coded for now
-    @btldrmntpt  = "#{@loop}p1"
-    @rootfsmntpt = "#{@loop}p2"
-
     fail 'Could not setup loop mounts.\
           Make sure you have util-linux v2.21 or higher' unless $?.success?
+
+    count = Dir["#{@loop}p*"].count
+
+    if @c.config[:firmware][:backend] == 'tar' && count != 2
+      fail 'Incompatible partition/backend settings detected!'
+    end
+
+    # FIXME: Figure out how to make this better
+    if @c.config[:firmware][:backend] == 'tar'
+      @btldrmntpt  = "#{@loop}p1"
+      @rootfsmntpt = "#{@loop}p2"
+    else
+      @rootfsmntpt = "#{@loop}p1"
+    end
   end
 
   def loop_teardown
@@ -62,8 +72,13 @@ class Image
 
   def setup_firmware
     puts 'Setting up the bootloader partition'
-    system("sudo mkfs.vfat #{@btldrmntpt}")
-    system("sudo fsck.vfat #{@btldrmntpt}")
+
+    # We only setup a separate the vfat partition if we have the tar backend
+    if @c.config[:firmware][:backend] == 'tar'
+      system("sudo mkfs.vfat #{@btldrmntpt}")
+      system("sudo fsck.vfat #{@btldrmntpt}")
+    end
+
     install_firmware
   end
 
@@ -90,6 +105,23 @@ class Image
     Mount.mount(@rootfsmntpt) do |d|
       r = RootFS.new(@c)
       r.install(d)
+    end
+  end
+
+  def setup_btldr
+    @c.config[:uboot].keys.each do |k|
+      Mount.mount(@btldrmntpt) do |boot_dir|
+        Mount.mount(@rootfsmntpt) do |rootfs_dir|
+
+          if File.exist? "#{rootfs_dir}/#{@c.config[:uboot][k][:file]}"
+            f = "#{rootfs_dir}/#{@c.config[:uboot][k][:file]}"
+          elsif File.exist? "#{boot_dir}/#{@c.config[:uboot][k][:file]}"
+            f = "#{boot_dir}/#{@c.config[:uboot][k][:file]}"
+          end
+
+          system("sudo dd if=#{f} of=#{@loop} #{@c.config[:uboot][k][:dd_opts]}")
+        end
+      end
     end
   end
 end
