@@ -13,15 +13,24 @@ where CONFIG_DIR is one of the various dirs under config/
 
 ## Partition layout ##
 
+All rootfs partitions are formatted to ext4.
+
 ### When using the tar backend ###
 
-You **MUST** have your parted.txt setup in a way that the first partition is a fat
-partition and the second partition is where your rootfs goes.
+You **MUST** have your parted.txt setup in a way that it makes atleast 2 partitions.
+
+Partition 1: This is where all the files from the boot/ folder of the tar
+             are installed. This will be formatted to a fat partition.
+
+Partition 2: This is where your rootfs will be installed.
 
 ### When using the apt backend ###
 
-You **MUST** have your parted.txt setup in a way that first partition is a ext4
+You **MUST** have your parted.txt setup in a way that first partition is your rootfs
 partition.
+
+Partition 1: This is where your rootfs and any packages you specify
+             will be installed.
 
 ## UBoot support ##
 
