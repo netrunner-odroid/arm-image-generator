@@ -17,7 +17,7 @@
     :SPL:
       :file: boot/cubox-i-spl.bin
       :dd_opts: "bs=1K seek=1"
-    :uboot:
+    :img:
       :file: boot/u-boot.img
       :dd_opts: "bs=1K seek=42"
   :login:
