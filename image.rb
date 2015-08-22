@@ -39,6 +39,7 @@ class Image
 
   def loop_setup
     @loop = `sudo losetup --show -f -P #{@filename}`.strip
+    `sudo partprobe #{@loop}`
 
     # FIXME: Hard coded for now
     @btldrmntpt  = "#{@loop}p1"
@@ -70,10 +71,10 @@ class Image
     t = {}
     Mount.mount(@btldrmntpt) do |boot_dir|
       Mount.mount(@rootfsmntpt) do |rootfs_dir|
-        r = Firmware.new(@c)
+        f = Firmware.new(@c)
         t[:boot] = boot_dir
-        t[:libdir] = "#{rootfs_dir}/lib/"
-        r.install(t)
+        t[:rootfs] = rootfs_dir
+        f.install(t)
       end
     end
   end

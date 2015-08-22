@@ -6,6 +6,7 @@
     :url: https://releases.linaro.org/15.06/ubuntu/vivid-images/nano/linaro-vivid-nano-20150618-705.tar.gz
     :md5sum: df15a61bb11e634b5c7e78379a67e8d9
   :firmware:
+    :backend: apt
     :url: https://github.com/netrunner-arm/c1_prebuilt/archive/master.tar.gz
     :md5sum: 74f3a83b7024dc11bec9f8854183d90f
   :login:
