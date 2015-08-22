@@ -8,13 +8,20 @@ The simplest way to run get a image is to call :
   ./run.rb -c config/CONFIG_DIR
 ```
 
-where CONFIG.yml is one of the various configs under the config dir
+where CONFIG_DIR is one of the various dirs under config/
 
-## Uboot enabled boards ##
 
-If you have a board that uses uboot, you'll have to flash uboot to the
-sdcard separately, or alternatively, flash it to the .img file produced
-manually.
+## Partition layout ##
+
+### When using the tar backend ###
+
+You MUST have your parted.txt setup in a way that the first partition is a fat
+partition and the second partition is where your rootfs goes.
+
+### When using the apt backend ###
+
+You MUST have your parted.txt setup in a way that first partition is a ext4
+partition.
 
 ## Licensing ##
 
