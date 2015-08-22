@@ -35,12 +35,11 @@ class FimrwareInstaller
 
   def setup
     # Networking setup
-    system("sudo mv #{@rootfs}/etc/resolv.conf #{@rootfs}/etc/resolv.conf.bak")
     system("sudo cp /etc/resolv.conf #{@rootfs}/etc/resolv.conf")
   end
 
   def cleanup
-    system("sudo mv #{@rootfs}/etc/resolv.conf.bak #{@rootfs}/etc/resolv.conf")
+    system("sudo rm #{@rootfs}/etc/resolv.conf")
   end
 
   private :mount, :unmount
