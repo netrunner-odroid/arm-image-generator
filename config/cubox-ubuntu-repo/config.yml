@@ -13,13 +13,17 @@
       - kernel-3.14.y-fslc-imx6-sr
       - u-boot-cubox-i
       - irqbalance-imx
-  :uboot:
-    :SPL:
-      :file: boot/cubox-i-spl.bin
-      :dd_opts: "bs=1K seek=1"
-    :img:
-      :file: boot/u-boot.img
-      :dd_opts: "bs=1K seek=42"
+  :bootloader:
+    :config:
+      :src: uEnv.txt.rb
+      :dst: boot/uEnv.txt
+    :uboot:
+      :SPL:
+        :file: boot/cubox-i-spl.bin
+        :dd_opts: "bs=1K seek=1"
+      :img:
+        :file: boot/u-boot.img
+        :dd_opts: "bs=1K seek=42"
   :login:
     :username: ubuntu
     :password: ubuntu

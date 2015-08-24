@@ -3,8 +3,10 @@ require_relative 'imageconfig'
 require_relative 'rootfs'
 require_relative 'firmware'
 require_relative 'lib/mount'
+require_relative 'lib/bootfile'
 
 require 'tmpdir'
+require 'tempfile'
 
 # Class to deal with image creation
 class Image
@@ -109,17 +111,39 @@ class Image
   end
 
   def setup_btldr
-    @c.config[:uboot].keys.each do |k|
+    @c.config[:bootloader][:uboot].keys.each do |k|
       Mount.mount(@btldrmntpt) do |boot_dir|
         Mount.mount(@rootfsmntpt) do |rootfs_dir|
 
-          if File.exist? "#{rootfs_dir}/#{@c.config[:uboot][k][:file]}"
-            f = "#{rootfs_dir}/#{@c.config[:uboot][k][:file]}"
-          elsif File.exist? "#{boot_dir}/#{@c.config[:uboot][k][:file]}"
-            f = "#{boot_dir}/#{@c.config[:uboot][k][:file]}"
+          if File.exist? "#{rootfs_dir}/#{@c.config[:bootloader][:uboot][k][:file]}"
+            f = "#{rootfs_dir}/#{@c.config[:bootloader][:uboot][k][:file]}"
+          elsif File.exist? "#{boot_dir}/#{@c.config[:bootloader][:uboot][k][:file]}"
+            f = "#{boot_dir}/#{@c.config[:bootloader][:uboot][k][:file]}"
           end
 
-          system("sudo dd if=#{f} of=#{@loop} #{@c.config[:uboot][k][:dd_opts]}")
+          system("sudo dd if=#{f} of=#{@loop} #{@c.config[:bootloader][:uboot][k][:dd_opts]}")
+        end
+      end
+    end
+
+    setup_bootconfig
+  end
+
+  def setup_bootconfig
+    return if @c.config[:bootloader][:config].nil?
+    Mount.mount(@btldrmntpt) do |boot_dir|
+      Mount.mount(@rootfsmntpt) do |rootfs_dir|
+        # Setup bootargs via a config file if any
+        config = BootFile.new(@c, @btldrmntpt, @rootfsmntpt)
+        f = Tempfile.new('bootfile')
+        p config.render
+        begin
+          f.write(config.render)
+          f.close
+          system("sudo mv #{f.path} #{boot_dir}/#{@c.config[:bootloader][:config][:dst]}") unless boot_dir.nil?
+          system("sudo mv #{f.path} #{rootfs_dir}/#{@c.config[:bootloader][:config][:dst]}") unless rootfs_dir.nil?
+        ensure
+          f.unlink
         end
       end
     end
