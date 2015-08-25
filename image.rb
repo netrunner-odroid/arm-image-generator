@@ -7,6 +7,7 @@ require_relative 'lib/bootfile'
 
 require 'tmpdir'
 require 'tempfile'
+require 'pp'
 
 # Class to deal with image creation
 class Image
@@ -131,20 +132,17 @@ class Image
 
   def setup_bootconfig
     return if @c.config[:bootloader][:config].nil?
+
+    config = BootFile.new(@c, @btldrmntpt, @rootfsmntpt)
+    f = Tempfile.new('bootfile')
+    f.write(config.render)
+    f.close
+
     Mount.mount(@btldrmntpt) do |boot_dir|
       Mount.mount(@rootfsmntpt) do |rootfs_dir|
         # Setup bootargs via a config file if any
-        config = BootFile.new(@c, @btldrmntpt, @rootfsmntpt)
-        f = Tempfile.new('bootfile')
-        p config.render
-        begin
-          f.write(config.render)
-          f.close
-          system("sudo mv #{f.path} #{boot_dir}/#{@c.config[:bootloader][:config][:dst]}") unless boot_dir.nil?
-          system("sudo mv #{f.path} #{rootfs_dir}/#{@c.config[:bootloader][:config][:dst]}") unless rootfs_dir.nil?
-        ensure
-          f.unlink
-        end
+        system("sudo mv #{f.path} #{boot_dir}/#{@c.config[:bootloader][:config][:dst]}") unless boot_dir.nil?
+        system("sudo mv #{f.path} #{rootfs_dir}/#{@c.config[:bootloader][:config][:dst]}") unless rootfs_dir.nil?
       end
     end
   end
