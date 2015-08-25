@@ -51,14 +51,32 @@ The dd_opts entry is optional.
 Example config follows:
 
 ```yml
-:uboot:
-  :SPL:
-    :file: boot/SPL.bin
-    :dd_opts: "bs=1K seek=1"
-  :img:
-    :file: boot/u-boot.img
-    :dd_opts: "bs=1K seek=42"
+:bootloader:
+  :uboot:
+    :SPL:
+      :file: boot/SPL.bin
+      :dd_opts: "bs=1K seek=1"
+    :img:
+      :file: boot/u-boot.img
+      :dd_opts: "bs=1K seek=42"
 ```
+
+### Boot config generation ###
+
+If your uboot requires a special boot config that needs to land on the image,
+one can be specified by using the :config: option under the :bootloader: entry.
+
+```yml
+:bootloader:
+  :config:
+    :src: boot.ini.rb
+    :dst: boot/boot.ini
+```
+You can only specify one config and it **MUST** have :src: entry relative to the
+config dir and a :dst: entry relative to the boot and rootfs partition.
+
+The file will be written to both the rootfs and the boot partition if you are using
+a 2 partition setup.
 
 ## Licensing ##
 
