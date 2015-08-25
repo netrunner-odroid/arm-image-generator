@@ -28,6 +28,7 @@ class BootFile
       unless boot_dir.nil?
         Dir.chdir(boot_dir) do
           @uImages += Dir["boot/uImage*"]
+          @uImages += Dir["uImage*"]
         end
       end
     end
@@ -48,6 +49,7 @@ class BootFile
       unless boot_dir.nil?
         Dir.chdir(boot_dir) do
           @uInitrds += Dir["boot/uInitrd*"]
+          @uInitrds += Dir["uInitrd*"]
         end
       end
     end

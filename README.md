@@ -78,6 +78,17 @@ config dir and a :dst: entry relative to the boot and rootfs partition.
 The file will be written to both the rootfs and the boot partition if you are using
 a 2 partition setup.
 
+The boot config can be extremely flexible, here's a list of useful variables that
+can be accessed inside the erb file :
+
+* rootfs_blkid -- blkid of the rootfs
+* bootfs_blkid -- blkid of the bootfs, if you have such a partition
+* uImages      -- Array of kernel's found
+* uInitrds     -- Array of initrd's found
+* uImage       -- Highest kernel version found
+* uInitrd      -- Highest initrd version found
+* c            -- ImageConfig class, can be used to access everything the board config
+
 ## Licensing ##
 
 Everything is distributed under GPLv2.
