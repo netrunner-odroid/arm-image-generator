@@ -74,6 +74,8 @@ class RootFS
   end
 
   def configure_login
+    return if @c.config[:login][:username].nil?
+
     puts "Adding user #{@c.config[:login][:username]}"
     system("sudo chroot #{@target} useradd -m #{@c.config[:login][:username]}")
     fail 'Could not add the user!' unless $?.success?
