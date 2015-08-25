@@ -16,7 +16,7 @@
       - u-boot-tools
   :bootloader:
     :config:
-      :src: boot.ini.rb
+      :src: boot.ini.erb
       :dst: boot/boot.ini
     :uboot:
       :bl1:

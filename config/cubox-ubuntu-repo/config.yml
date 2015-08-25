@@ -15,7 +15,7 @@
       - irqbalance-imx
   :bootloader:
     :config:
-      :src: uEnv.txt.rb
+      :src: uEnv.txt.erb
       :dst: boot/uEnv.txt
     :uboot:
       :SPL:
