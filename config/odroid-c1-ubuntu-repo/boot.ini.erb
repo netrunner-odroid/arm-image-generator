@@ -51,13 +51,13 @@ setenv cec "0"
 # UHS Card Configuration
 # Uncomment the line below to __DISABLE__ UHS-1 MicroSD support
 # This might break boot for some brand models of cards.
-setenv disableuhs "disableuhs"
+# setenv disableuhs "disableuhs"
 
 
 # Disable VPU (Video decoding engine, Saves RAM!!!)
 # 0 = disabled
 # 1 = enabled
-setenv vpu "1"
+setenv vpu "0"
 
 # Disable HDMI Output (Again, saves ram!)
 # 0 = disabled
@@ -65,28 +65,30 @@ setenv vpu "1"
 setenv hdmioutput "1"
 
 # Default Console Device Setting
-# setenv condev "console=ttyS0,115200n8"        # on serial port
-# setenv condev "console=tty0"                    # on display (HDMI)
-setenv condev "console=ttyS0,115200n8 console=tty0"   # on both
-
-
+# setenv condev "console=ttyS0,115200n8"              # on serial port
+# setenv condev "console=tty0"                        # on display (HDMI)
+setenv condev "console=ttyS0,115200n8 console=tty0"  # on both
 
 ###########################################
-
 if test "${hpd}" = "0"; then setenv hdmi_hpd "disablehpd=true"; fi
 if test "${cec}" = "1"; then setenv hdmi_cec "hdmitx=cecf"; fi
 
+
+# Set Linux partition UUID
+setenv linuuid "<%= rootfs_blkido %>"
+
+
 # Boot Arguments
-setenv bootargs "root=UUID=<%= rootfs_blkid %> rootwait ro ${condev} no_console_suspend vdaccfg=0xa000 logo=osd1,loaded,0x7900000,720p,full dmfc=3 cvbsmode=576cvbs hdmimode=${m} m_bpp=${m_bpp} vout=${vout_mode} ${disableuhs} ${hdmi_hpd} ${hdmi_cec} ${enabledac}"
+setenv bootargs "root=UUID=${linuuid} rootwait ro ${condev} no_console_suspend vdaccfg=0xa000 logo=osd1,loaded,0x7900000,720p,full dmfc=3 cvbsmode=576cvbs hdmimode=${m} m_bpp=${m_bpp} vout=${vout_mode} ${disableuhs} ${hdmi_hpd} ${hdmi_cec}"
 
 # Booting
-fatload mmc 0:1 0x21000000 <%= uImage %>
-fatload mmc 0:1 0x22000000 <%= uInitrd %>
-fatload mmc 0:1 0x21800000 meson8b_odroidc.dtb
+ext4load mmc 0:1 0x21000000 <%= uImage %>
+ext4load mmc 0:1 0x22000000 <%= uInitrd %>
+ext4load mmc 0:1 0x21800000 boot/meson8b_odroidc.dtb
 fdt addr 21800000
 
 if test "${vpu}" = "0"; then fdt rm /mesonstream; fdt rm /vdec; fdt rm /ppmgr; fi
 
 if test "${hdmioutput}" = "0"; then fdt rm /mesonfb; fi
 
-bootm 0x21000000 0x22000000 0x21800000"
+bootm 0x21000000 0x22000000 0x21800000
