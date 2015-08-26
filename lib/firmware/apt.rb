@@ -21,6 +21,6 @@ class FimrwareInstaller
   end
 
   def apt_install(pkg)
-    system("sudo chroot #{@rootfs} apt -y install #{pkg}")
+    system("sudo chroot #{@rootfs} sh -c \"DEBIAN_FRONTEND=noninteractive apt -y install #{pkg}\"")
   end
 end
