@@ -14,6 +14,7 @@
       - linux-image-c1
       - u-boot
       - u-boot-tools
+      - bootini
   :bootloader:
     :config:
       :src: boot.ini.erb
