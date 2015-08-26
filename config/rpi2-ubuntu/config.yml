@@ -8,7 +8,10 @@
   :firmware:
     :backend: tar
     :url: https://github.com/raspberrypi/firmware/archive/master.tar.gz
-    :md5sum: 2800f7493f2ed4a7fea12baa919641a3
+  :bootloader:
+    :config:
+      :src: cmdline.txt.erb
+      :dst: cmdline.txt
   :login:
     :username: ubuntu
     :password: ubuntu

@@ -7,7 +7,7 @@ require_relative 'lib/bootfile'
 
 require 'tmpdir'
 require 'tempfile'
-require 'pp'
+require 'date'
 
 # Class to deal with image creation
 class Image
@@ -17,7 +17,9 @@ class Image
   end
 
   def run!
-    @filename = "#{@c.config[:release]}.img"
+    dt = DateTime.now.strftime("%Y%m%d.%H%M")
+    @filename = "#{@c.config[:release]}_#{dt}.img"
+
     File.delete(@filename) if File.exist? @filename
 
     # Create file
@@ -90,7 +92,7 @@ class Image
     Mount.mount(@btldrmntpt) do |boot_dir|
       Mount.mount(@rootfsmntpt) do |rootfs_dir|
         f = Firmware.new(@c)
-        t[:boot] = boot_dir
+        t[:bootfs] = boot_dir
         t[:rootfs] = rootfs_dir
         f.install(t)
       end
@@ -112,6 +114,10 @@ class Image
   end
 
   def setup_btldr
+    setup_bootconfig
+
+    return unless @c.config[:bootloader][:uboot]
+
     @c.config[:bootloader][:uboot].keys.each do |k|
       Mount.mount(@btldrmntpt) do |boot_dir|
         Mount.mount(@rootfsmntpt) do |rootfs_dir|
@@ -126,12 +132,10 @@ class Image
         end
       end
     end
-
-    setup_bootconfig
   end
 
   def setup_bootconfig
-    return if @c.config[:bootloader][:config].nil?
+    return unless @c.config[:bootloader][:config]
 
     config = BootFile.new(@c, @btldrmntpt, @rootfsmntpt)
     f = Tempfile.new('bootfile')
