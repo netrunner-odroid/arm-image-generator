@@ -40,7 +40,8 @@
         :file: usr/share/c1_uboot/u-boot.bin
         :dd_opts: "bs=512 seek=64"
   :login:
-    :username: ubuntu
-    :password: ubuntu
+    :username: odroid
+    :password: odroid
     :groups:
       - sudo
+      - video
