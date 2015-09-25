@@ -10,6 +10,10 @@ The simplest way to run get a image is to call :
 
 where CONFIG_DIR is one of the various dirs under config/
 
+## Runtime requirements ##
+
+* ruby
+* axel ( to download images )
 
 ## Partition layout ##
 
