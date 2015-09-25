@@ -1,0 +1,46 @@
+---
+  :release: netrunner
+  :size: 4G
+  :parted: parted.txt
+  :rootfs:
+    :url: http://pangea-data.s3.amazonaws.com/dci/images/odroid/odroid_20150925.tar.gz
+    :md5sum: 3789076bf4f7399b83240b72219174a2
+  :firmware:
+    :backend: apt
+    :sources:
+      :c1: http://deb.odroid.in/c1/ trusty main
+      :odroid: http://deb.odroid.in/ trusty main
+    :packages:
+      # Kernel and some basic utilities
+      - linux-image-c1
+      - u-boot
+      - u-boot-tools
+      - bootini
+
+      # Special X11 packages for the ODROID
+      - mali-x11=0+git20150811.1608+9-0
+      - xserver-xorg-video-mali=0+git20150710.2035+9-0
+
+      # Special KWin packages for the ODROID
+      - kwin-x11=4:5.4.1+git20150907.1751+9-0
+      - kwin-common=4:5.4.1+git20150907.1751+9-0
+      - kwin-data=4:5.4.1+git20150907.1751+9-0
+  :bootloader:
+    :config:
+      :src: boot.ini.erb
+      :dst: boot/boot.ini
+    :uboot:
+      :bl1:
+        :file: usr/share/c1_uboot/bl1.bin.hardkernel
+        :dd_opts: "bs=1 count=442"
+      :SPL:
+        :file: usr/share/c1_uboot/bl1.bin.hardkernel
+        :dd_opts: "bs=512 skip=1 seek=1"
+      :img:
+        :file: usr/share/c1_uboot/u-boot.bin
+        :dd_opts: "bs=512 seek=64"
+  :login:
+    :username: ubuntu
+    :password: ubuntu
+    :groups:
+      - sudo
