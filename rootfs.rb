@@ -4,6 +4,7 @@ require 'open-uri'
 require 'digest'
 require 'rubygems/package'
 require 'zlib'
+require 'uri'
 
 class RootFS
   def initialize(config)
@@ -19,11 +20,13 @@ class RootFS
     retry_times = 0
     Dir.mkdir('cache') unless Dir.exist?('cache')
 
+    @rootfsFile = File.basename(URI.parse(@c.config[:rootfs][:url]).path)
+
     puts 'Downloading the rootfs'
     # FIXME: Assume tar.gz format for now
     begin
-      unless File.exist?('cache/rootfs.tar.gz') && checksum_matches?
-        File.write('cache/rootfs.tar.gz', open(@c.config[:rootfs][:url]).read)
+      unless File.exist?("cache/#{@rootfsFile}") && checksum_matches?
+        system("axel -o cache/ #{@c.config[:rootfs][:url]}")
       end
       fail 'Checksum failed to match' unless checksum_matches?
     rescue => e
@@ -32,13 +35,9 @@ class RootFS
       retry if retry_times < 3
     end
 
-    # FIXME: This should be really be a bit more properly tuned
-    tar = Gem::Package::TarReader.new(Zlib::GzipReader.open('cache/rootfs.tar.gz'))
-    tar.rewind
-    useradd = tar.select { |e| e if e.full_name.include? 'useradd' }[0]
-    tar.close
-    components = useradd.full_name.split('usr')[0].split('/').count
-    ec = system("sudo tar xf cache/rootfs.tar.gz -C #{@target} --strip-components #{components}")
+    useradd = `lesspipe cache/#{@rootfsFile} | grep sbin/useradd | awk '{ print $6 }'`
+    components = useradd.split('usr')[0].split('/').count
+    ec = system("sudo tar xf cache/#{@rootfsFile} -p -s -C #{@target} --strip-components #{components}")
     fail 'Could not untar the rootfs!' unless ec
 
     begin

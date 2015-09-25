@@ -21,6 +21,7 @@ class FimrwareInstaller
   end
 
   def apt_install(pkg)
+    fail 'Failed to install' unless
     system("sudo chroot #{@rootfs} sh -c \"DEBIAN_FRONTEND=noninteractive apt -y install #{pkg}\"")
   end
 end
