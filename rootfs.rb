@@ -26,7 +26,7 @@ class RootFS
     # FIXME: Assume tar.gz format for now
     begin
       unless File.exist?("cache/#{@rootfsFile}") && checksum_matches?
-        system("axel -o cache/ #{@c.config[:rootfs][:url]}")
+        system("axel -n 10 -a -o cache/ #{@c.config[:rootfs][:url]}")
       end
       fail 'Checksum failed to match' unless checksum_matches?
     rescue => e
@@ -35,7 +35,7 @@ class RootFS
       retry if retry_times < 3
     end
 
-    useradd = `lesspipe cache/#{@rootfsFile} | grep sbin/useradd | awk '{ print $6 }'`
+    useradd = `tar tf cache/#{@rootfsFile} | grep sbin/useradd`.strip
     components = useradd.split('usr')[0].split('/').count
     ec = system("sudo tar xf cache/#{@rootfsFile} -p -s -C #{@target} --strip-components #{components}")
     fail 'Could not untar the rootfs!' unless ec
@@ -50,7 +50,7 @@ class RootFS
 
   def checksum_matches?
     return true if @c.config[:rootfs][:md5sum].nil?
-    sum = Digest::MD5.file('cache/rootfs.tar.gz').hexdigest
+    sum = Digest::MD5.file("cache/#{@rootfsFile}").hexdigest
     @c.config[:rootfs][:md5sum] == sum
   end
 

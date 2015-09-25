@@ -9,7 +9,7 @@ class FimrwareInstaller
     tmpdir = Dir.mktmpdir
     @c.config[:firmware][:sources].keys.each do |k|
       repo = "deb #{@c.config[:firmware][:sources][k]}\n"
-      open("#{tmpdir}/#{k}.list", 'w') do |f|
+      open("#{tmpdir}/#{k}.list", 'w+') do |f|
         f.write(repo)
       end
     end
@@ -22,6 +22,6 @@ class FimrwareInstaller
 
   def apt_install(pkg)
     fail 'Failed to install' unless
-    system("sudo chroot #{@rootfs} sh -c \"DEBIAN_FRONTEND=noninteractive apt -y install #{pkg}\"")
+    system("sudo chroot #{@rootfs} sh -c \"DEBIAN_FRONTEND=noninteractive apt --force-yes -y install #{pkg}\"")
   end
 end
