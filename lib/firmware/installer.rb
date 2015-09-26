@@ -28,7 +28,7 @@ class FimrwareInstaller
 
   def unmount
     @dev.each do |d|
-      system('sudo',  'umount', "#{@rootfs}/#{d}")
+      fail "Failed to unmount #{d}" unless system('sudo',  'umount', "#{@rootfs}/#{d}")
     end
     system("sudo rm #{@rootfs}/usr/bin/qemu-arm-static")
   end
@@ -36,10 +36,13 @@ class FimrwareInstaller
   def setup
     # Networking setup
     system("sudo cp /etc/resolv.conf #{@rootfs}/etc/resolv.conf")
+    system("sudo chroot #{@rootfs} dpkg-divert --rename --quiet --add /sbin/start-stop-daemon")
+    system("sudo chroot #{@rootfs} ln -s /bin/true /sbin/start-stop-daemon")
   end
 
   def cleanup
     system("sudo rm #{@rootfs}/etc/resolv.conf")
+    system("sudo chroot #{@rootfs} dpkg-divert --rename --quiet --remove /sbin/start-stop-daemon")
   end
 
   private :mount, :unmount
