@@ -1,15 +1,15 @@
 ---
   :release: netrunner
-  :size: 4G
+  :size: 5G
   :parted: parted.txt
   :rootfs:
-    :url: http://pangea-data.s3.amazonaws.com/dci/images/odroid/odroid_20150925.tar.gz
-    :md5sum: 3789076bf4f7399b83240b72219174a2
+    :url: http://pangea-data.s3.amazonaws.com/dci/images/odroid/odroid_20150926.tar.gz
   :firmware:
     :backend: apt
     :sources:
       :c1: http://deb.odroid.in/c1/ trusty main
       :odroid: http://deb.odroid.in/ trusty main
+      :dci_odroid: http://pangea-data.s3.amazonaws.com/dci/odroid/debian sid main
     :packages:
       # Kernel and some basic utilities
       - linux-image-c1
@@ -18,13 +18,16 @@
       - bootini
 
       # Special X11 packages for the ODROID
-      - mali-x11=0+git20150811.1608+9-0
+      - mali-x11=0+git20150926.0803+9-0
       - xserver-xorg-video-mali=0+git20150710.2035+9-0
 
       # Special KWin packages for the ODROID
       - kwin-x11=4:5.4.1+git20150907.1751+9-0
       - kwin-common=4:5.4.1+git20150907.1751+9-0
       - kwin-data=4:5.4.1+git20150907.1751+9-0
+
+      # Special Calamares package for ODROID
+      - calamares=0+git20150926.0822+9-0
   :bootloader:
     :config:
       :src: boot.ini.erb
