@@ -3,7 +3,7 @@
   :size: 5G
   :parted: parted.txt
   :rootfs:
-    :url: http://pangea-data.s3.amazonaws.com/dci/images/odroid/odroid_20150926.tar.gz
+    :url: http://pangea-data.s3.amazonaws.com/dci/images/odroid/odroid_20150930.tar.gz
   :firmware:
     :backend: apt
     :sources:
@@ -18,8 +18,8 @@
       - bootini
 
       # Special X11 packages for the ODROID
-      - mali-x11=0+git20150926.0803+9-0
-      - xserver-xorg-video-mali=0+git20150710.2035+9-0
+      - mali-x11=0+git20150929.1446+9-0
+      - xserver-xorg-video-mali=0+git20150929.0001+9-0
 
       # Special KWin packages for the ODROID
       - kwin-x11=4:5.4.1+git20150907.1751+9-0
@@ -27,7 +27,10 @@
       - kwin-data=4:5.4.1+git20150907.1751+9-0
 
       # Special Calamares package for ODROID
-      - calamares=0+git20150926.0822+9-0
+      - calamares=0+git20150929.1422+9-0
+
+      # Special krfb package for ODROID
+      - krfb=4:15.04.2-3~
   :bootloader:
     :config:
       :src: boot.ini.erb
@@ -42,9 +45,3 @@
       :img:
         :file: usr/share/c1_uboot/u-boot.bin
         :dd_opts: "bs=512 seek=64"
-  :login:
-    :username: odroid
-    :password: odroid
-    :groups:
-      - sudo
-      - video

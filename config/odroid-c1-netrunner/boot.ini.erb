@@ -79,11 +79,11 @@ if test "${cec}" = "1"; then setenv hdmi_cec "hdmitx=cecf"; fi
 
 
 # Boot Arguments
-setenv bootargs "root=/dev/mmcblk0p1 rootwait rw ${condev} no_console_suspend vdaccfg=0xa000 logo=osd1,loaded,0x7900000,720p,full dmfc=3 cvbsmode=576cvbs hdmimode=${m} m_bpp=${m_bpp} vout=${vout_mode} ${disableuhs} ${hdmi_hpd} ${hdmi_cec} boot=live components hostname=odroid"
+setenv bootargs "root=/dev/mmcblk0p1 rootwait rw ${condev} no_console_suspend vdaccfg=0xa000 logo=osd1,loaded,0x7900000,720p,full dmfc=3 cvbsmode=576cvbs hdmimode=${m} m_bpp=${m_bpp} vout=${vout_mode} ${disableuhs} ${hdmi_hpd} ${hdmi_cec} boot=live components hostname=odroid username=live"
 
 # Booting
 ext4load mmc 0:1 0x21000000 <%= uImage %>
-ext4load mmc 0:1 0x22000000 <%= uInitrd %>
+# ext4load mmc 0:1 0x22000000 <%= uInitrd %>
 ext4load mmc 0:1 0x21800000 boot/meson8b_odroidc.dtb
 fdt addr 21800000
 
@@ -91,4 +91,4 @@ if test "${vpu}" = "0"; then fdt rm /mesonstream; fdt rm /vdec; fdt rm /ppmgr; f
 
 if test "${hdmioutput}" = "0"; then fdt rm /mesonfb; fi
 
-bootm 0x21000000 0x22000000 0x21800000
+bootm 0x21000000 - 0x21800000
