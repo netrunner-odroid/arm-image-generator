@@ -27,10 +27,11 @@
       - kwin-data=4:5.4.1+git20150907.1751+9-0
 
       # Special Calamares package for ODROID
-      - calamares=0+git20150929.1422+9-0
+      - calamares=0+git20150930.1547+9-0
+      - calamares-branding=1+git20150825.2330+9
 
       # Special krfb package for ODROID
-      - krfb=4:15.04.2-3~
+      - krfb
   :bootloader:
     :config:
       :src: boot.ini.erb
