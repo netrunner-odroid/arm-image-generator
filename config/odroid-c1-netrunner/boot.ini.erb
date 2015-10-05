@@ -62,7 +62,7 @@ setenv vpu "0"
 # Disable HDMI Output (Again, saves ram!)
 # 0 = disabled
 # 1 = enabled
-setenv hdmioutput "1"
+# setenv hdmioutput "1"
 
 # Default Console Device Setting
 # setenv condev "console=ttyS0,115200n8"              # on serial port
@@ -89,6 +89,6 @@ fdt addr 21800000
 
 if test "${vpu}" = "0"; then fdt rm /mesonstream; fdt rm /vdec; fdt rm /ppmgr; fi
 
-if test "${hdmioutput}" = "0"; then fdt rm /mesonfb; fi
+# if test "${hdmioutput}" = "0"; then fdt rm /mesonfb; fi
 
 bootm 0x21000000 - 0x21800000
