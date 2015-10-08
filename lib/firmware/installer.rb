@@ -6,6 +6,10 @@ class FimrwareInstaller
     require_relative "#{@c.config[:firmware][:backend]}"
   end
 
+  def run_in_chroot(cmd)
+    system("sudo chroot #{@rootfs} #{cmd}")
+  end
+
   def install(config)
     @rootfs = config[:rootfs]
     @bootfs = config[:bootfs]
