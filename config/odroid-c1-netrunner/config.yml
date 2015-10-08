@@ -3,9 +3,11 @@
   :size: 5G
   :parted: parted.txt
   :rootfs:
-    :url: http://pangea-data.s3.amazonaws.com/dci/images/odroid/odroid_20150930.tar.gz
+    :url: http://pangea-data.s3.amazonaws.com/dci/images/armhf/live-image-armhf.tar.gz
   :firmware:
     :backend: apt
+    :keys:
+      - 5360FB9DAB19BAC9
     :sources:
       :c1: http://deb.odroid.in/c1/ trusty main
       :odroid: http://deb.odroid.in/ trusty main
@@ -18,8 +20,8 @@
       - bootini
 
       # Special X11 packages for the ODROID
-      - mali-x11=0+git20150929.1446+9-0
-      - xserver-xorg-video-mali=0+git20150929.0001+9-0
+      - mali-x11/unstable
+      - xserver-xorg-video-mali/unstable
 
       # Special KWin packages for the ODROID
       - kwin-x11=4:5.4.1+git20150907.1751+9-0
@@ -27,11 +29,13 @@
       - kwin-data=4:5.4.1+git20150907.1751+9-0
 
       # Special Calamares package for ODROID
-      - calamares=0+git20150930.1547+9-0
+      - calamares=0+git20151007.1622+9-0
       - calamares-branding=1+git20150825.2330+9
 
-      # Special krfb package for ODROID
-      - krfb
+      # Special extra packages for ODROID
+      - krfb # Has a few random patches
+      - netrunner-default-settings=1.3.1+git20151006.1738+9
+      - zram-config
   :bootloader:
     :config:
       :src: boot.ini.erb
