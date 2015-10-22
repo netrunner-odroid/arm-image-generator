@@ -29,7 +29,7 @@
       - kwin-data=4:5.4.80+git20151020.1515+9-0
 
       # Special Calamares package for ODROID
-      - calamares=0+git20151007.1622+9-0
+      - calamares=0+git20151021.1457+9-0
       - calamares-branding=1+git20150825.2330+9
 
       # Special extra packages for ODROID
