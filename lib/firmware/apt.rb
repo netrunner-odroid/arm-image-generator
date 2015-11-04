@@ -30,6 +30,9 @@ class FimrwareInstaller
   end
 
   def add_keys
+    return unless @c.config[:firmware][:keys]
+    return if @c.config[:firmware][:keys].empty?
+
     @c.config[:firmware][:keys].each do |k|
       run_in_chroot("apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys #{k}")
     end
