@@ -3,7 +3,7 @@
   :size: 5G
   :parted: parted.txt
   :rootfs:
-    :url: http://pangea-data.s3.amazonaws.com/dci/images/armhf/live-image-armhf.tar.gz
+    :url: http://pangea-data.s3.amazonaws.com/dci/images/armhf/live-image-armhf.tar.tar.gz
   :firmware:
     :backend: apt
     :keys:
@@ -24,17 +24,17 @@
       - xserver-xorg-video-mali/unstable
 
       # Special KWin packages for the ODROID
-      - kwin-x11=4:5.4.80+git20151020.1515+9-0
-      - kwin-common=4:5.4.80+git20151020.1515+9-0
-      - kwin-data=4:5.4.80+git20151020.1515+9-0
+      - kwin-x11=4:5.4.80+git20151029.1240+9-0
+      - kwin-common=4:5.4.80+git20151029.1240+9-0
+      - kwin-data=4:5.4.80+git20151029.1240+9-0
 
       # Special Calamares package for ODROID
-      - calamares=0+git20151021.1457+9-0
+      - calamares=0+git20151103.1711+9-0
       - calamares-branding=1+git20150825.2330+9
 
       # Special extra packages for ODROID
       - krfb # Has a few random patches
-      - netrunner-default-settings=1.3.1+git20151006.1738+9
+      - netrunner-default-settings=1.3.1+git20151024.1422+9
       - zram-config
       - mintupdate
   :bootloader:
