@@ -1,0 +1,25 @@
+# configure bootargs
+setenv bootargs 'root=/dev/mmcblk0p1 rootfstype=ext4 console=ttyS0,115200n8'
+
+# configure addresses
+kerneladdr=0x2000000
+fdtaddr=0x5F00000
+ramdiskaddr=0x6000000
+
+# load DTB
+echo "Loading armada-388-clearfog.dtb"
+ext4load mmc 0:1 ${fdtaddr} /boot/armada-388-clearfog.dtb
+
+echo "Loading zImage ..."
+# load Kernel
+ext4load mmc 0:1 ${kerneladdr} /boot/zImage
+
+#echo "Loading initrd ..."
+# load Ramdisk
+#ext4load mmc 0:1 ${ramdiskaddr} /boot/initrd
+#ramdisksize=0x${filesize}
+
+# boot
+echo "Booting ..."
+#bootz ${kerneladdr} ${ramdiskaddr}:${ramdisksize} ${fdtaddr}
+bootz ${kerneladdr} - ${fdtaddr}
