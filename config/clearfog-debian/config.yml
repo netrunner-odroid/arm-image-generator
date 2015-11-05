@@ -1,0 +1,31 @@
+---
+  :release: sr-a38x-debian-jessie
+  :size: 2G
+  :parted: parted.txt
+  :rootfs:
+    :url: http://snapshots.linaro.org/debian/images/developer-armhf/latest/linaro-jessie-developer-20151103-6.tar.gz
+    :md5sum: fdb0bc9252b94f103fb255463206b417
+  :firmware:
+    :backend: apt
+    :keys:
+      - E45C02CD
+    :sources:
+      :clearfog_repo: http://repo.solid-build.xyz/debian/jessie/bsp-imx6/ ./
+    :packages:
+      - kernel-3.10.y-marvell-clearfog
+      - u-boot-marvell-clearfog
+      - auto-expand-rootfs
+  :bootloader:
+    :config:
+      :src: boot.txt
+      :dst: boot.scr
+      :cmd: "mkimage -A arm -O linux -T script -C none -a 0 -e 0 -d @source@ @dest@"
+    :uboot:
+      :u-boot.mmc:
+        :file: boot/u-boot-clearfog.mmc
+        :dd_opts: "bs=512 seek=1"
+  :login:
+    :username: debian
+    :password: debian
+    :groups:
+      - sudo
