@@ -142,6 +142,16 @@ class Image
     f.write(config.render)
     f.close
 
+    if @c.config[:bootloader][:config][:cmd]
+      f_cmd = Tempfile.new('bootfile')
+      cmd = @c.config[:bootloader][:config][:cmd]
+      cmd.gsub!(/@source@/, f.path)
+      cmd.gsub!(/@dest@/, f_cmd.path)
+      fail "Failed to run #{cmd} on bootloader file!" unless
+           system(cmd)
+      f = f_cmd
+    end
+
     Mount.mount(@btldrmntpt) do |boot_dir|
       Mount.mount(@rootfsmntpt) do |rootfs_dir|
         # Setup bootargs via a config file if any
