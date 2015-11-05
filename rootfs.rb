@@ -54,7 +54,7 @@ class RootFS
   end
 
   def mount
-    system("sudo cp /usr/bin/qemu-arm-static #{@target}/usr/bin/")
+    system("sudo cp #{QEMU_ARM_STATIC} #{@target}/usr/bin/")
     @dev.each do |d|
       system('sudo', 'mount', '--bind', "/#{d}", "#{@target}/#{d}")
     end
@@ -64,7 +64,7 @@ class RootFS
     @dev.each do |d|
       system('sudo',  'umount', "#{@target}/#{d}")
     end
-    system("sudo rm #{@target}/usr/bin/qemu-arm-static")
+    system("sudo rm #{@target}/#{QEMU_ARM_STATIC}")
   end
 
   def configure

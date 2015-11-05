@@ -24,7 +24,7 @@ class FimrwareInstaller
   end
 
   def mount
-    system("sudo cp /usr/bin/qemu-arm-static #{@rootfs}/usr/bin/")
+    system("sudo cp #{QEMU_ARM_STATIC} #{@rootfs}/usr/bin/")
     @dev.each do |d|
       system('sudo', 'mount', '--bind', "/#{d}", "#{@rootfs}/#{d}")
     end
@@ -34,7 +34,7 @@ class FimrwareInstaller
     @dev.each do |d|
       fail "Failed to unmount #{d}" unless system('sudo',  'umount', "#{@rootfs}/#{d}")
     end
-    system("sudo rm #{@rootfs}/usr/bin/qemu-arm-static")
+    system("sudo rm #{@rootfs}/#{QEMU_ARM_STATIC}")
   end
 
   def setup

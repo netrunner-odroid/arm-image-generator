@@ -9,10 +9,13 @@ require 'tmpdir'
 require 'tempfile'
 require 'date'
 
+# Figure out what interpreter to use
+QEMU_ARM_STATIC = File.readlines("/proc/sys/fs/binfmt_misc/qemu-arm").grep(/interpreter/)[0].split[-1]
+
 # Class to deal with image creation
 class Image
-
   def initialize(config)
+    fail 'Could not find arm interpreter' unless QEMU_ARM_STATIC
     @c = config
   end
 
