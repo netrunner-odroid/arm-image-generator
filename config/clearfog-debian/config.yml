@@ -1,6 +1,6 @@
 ---
   :release: sr-a38x-debian-jessie
-  :size: 2G
+  :size: 1G
   :parted: parted.txt
   :rootfs:
     :url: http://snapshots.linaro.org/debian/images/developer-armhf/latest/linaro-jessie-developer-20151103-6.tar.gz
@@ -14,7 +14,7 @@
     :packages:
       - kernel-3.10.y-marvell-clearfog
       - u-boot-marvell-clearfog
-      - auto-expand-rootfs
+      - expand-fs
   :bootloader:
     :config:
       :src: boot.txt
