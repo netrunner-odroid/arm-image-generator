@@ -10,7 +10,8 @@ require 'tempfile'
 require 'date'
 
 # Figure out what interpreter to use
-QEMU_ARM_STATIC = File.readlines("/proc/sys/fs/binfmt_misc/qemu-arm").grep(/interpreter/)[0].split[-1]
+MISC_BINFMT = Dir["/proc/sys/fs/binfmt_misc/*arm"][0]
+QEMU_ARM_STATIC = File.readlines(MISC_BINFMT).grep(/interpreter/)[0].split[-1]
 
 # Class to deal with image creation
 class Image
