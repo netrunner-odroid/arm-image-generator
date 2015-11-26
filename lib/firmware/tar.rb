@@ -19,7 +19,7 @@ class FimrwareInstaller
     # FIXME: Assume tar.gz format for now
     begin
       unless File.exist?("cache/#{@firmwareFile}") && checksum_matches?
-        system("axel -n 10 -a -o cache/ #{@c.config[:firmware][:url]}")
+        system("wget -P cache/ #{@c.config[:firmware][:url]}")
       end
       fail 'Checksum failed to match' unless checksum_matches?
     rescue => e
@@ -29,22 +29,25 @@ class FimrwareInstaller
     end
 
     system("tar xf cache/#{@firmwareFile} -C #{FIRMWARE_DIR}")
-    system("sudo cp -aR --no-preserve=all #{FIRMWARE_DIR}/boot/* #{@bootfs}/")
-    fail 'Could not copy over firmware files!' unless $?.success?
+    Dir["#{FIRMWARE_DIR}/**/*/boot"].each do |dir|
+      unless system("sudo cp -aR --no-preserve=all #{dir}/* #{@bootfs}/")
+        fail 'Could not copy over firmware files!'
+      end
+    end
 
-    install_kernel_modules
+    install_rest
   end
 
-  def install_kernel_modules
-    fail 'Failed to create modules dir!' unless system("sudo mkdir -p #{@libdir}/modules")
-    fail 'Failed to create modules dir!' unless system("sudo mkdir -p #{@libdir}/firmware")
-    rsync("#{FIRMWARE_DIR}/modules/", "#{@libdir}/modules/")
-    rsync("#{FIRMWARE_DIR}/firmware/", "#{@libdir}/firmware/")
+  def install_rest
+    Dir[FIRMWARE_DIR].each do |dir|
+      next if dir.include? 'boot'
+      rsync(dir, @rootfs)
+    end
   end
 
   def rsync(src, target)
     return unless Dir.exist? src
-    system("sudo rsync -r -t -p -o -g -x --delete -l -H -D --numeric-ids -s #{src} #{target}")
+    system("sudo rsync -r -t -p -o -g -x -l -H -D --numeric-ids -s #{src} #{target}")
   end
 
   def checksum_matches?
