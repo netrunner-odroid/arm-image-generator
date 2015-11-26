@@ -120,7 +120,9 @@ class Image
   def setup_btldr
     setup_bootconfig
 
-    return unless @c.config[:bootloader][:uboot]
+    if @c.config[:bootloader].nil? || @c.config[:bootloader][:config].nil?
+      return
+    end
 
     @c.config[:bootloader][:uboot].keys.each do |k|
       Mount.mount(@btldrmntpt) do |boot_dir|
@@ -139,7 +141,9 @@ class Image
   end
 
   def setup_bootconfig
-    return unless @c.config[:bootloader][:config]
+    if @c.config[:bootloader].nil? || @c.config[:bootloader][:config].nil?
+      return
+    end
 
     config = BootFile.new(@c, @btldrmntpt, @rootfsmntpt)
     f = Tempfile.new('bootfile')
