@@ -24,7 +24,6 @@ class FimrwareInstaller
   end
 
   def mount
-    system("sudo cp #{QEMU_ARM_STATIC} #{@rootfs}/usr/bin/")
     @dev.each do |d|
       system('sudo', 'mount', '--bind', "/#{d}", "#{@rootfs}/#{d}")
     end
@@ -34,16 +33,16 @@ class FimrwareInstaller
     @dev.each do |d|
       fail "Failed to unmount #{d}" unless system('sudo',  'umount', "#{@rootfs}/#{d}")
     end
-    system("sudo rm #{@rootfs}/#{QEMU_ARM_STATIC}")
   end
 
   def setup
-    # Networking setup
+    system("sudo cp #{QEMU_ARM_STATIC} #{@rootfs}/usr/bin/")
     system("sudo cp /etc/resolv.conf #{@rootfs}/etc/resolv.conf")
   end
 
   def cleanup
-    system("sudo rm #{@rootfs}/etc/resolv.conf")
+    system("sudo rm -f #{@rootfs}/#{QEMU_ARM_STATIC}")
+    system("sudo rm -f #{@rootfs}/etc/resolv.conf")
   end
 
   private :mount, :unmount
