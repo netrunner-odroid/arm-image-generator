@@ -14,10 +14,12 @@ class FimrwareInstaller
     puts 'Downloading firmware.tar.gz'
     retry_times = 0
 
+    @firmwareFile = File.basename(URI.parse(@c.config[:firmware][:url]).path)
+
     # FIXME: Assume tar.gz format for now
     begin
-      unless File.exist?('cache/firmware.tar.gz') && checksum_matches?
-        File.write('cache/firmware.tar.gz', open(@c.config[:firmware][:url]).read)
+      unless File.exist?("cache/#{@firmwareFile}") && checksum_matches?
+        system("axel -n 10 -a -o cache/ #{@c.config[:firmware][:url]}")
       end
       fail 'Checksum failed to match' unless checksum_matches?
     rescue => e
@@ -26,7 +28,7 @@ class FimrwareInstaller
       retry if retry_times < 3
     end
 
-    system("tar xf cache/firmware.tar.gz -C #{FIRMWARE_DIR} --strip-components=1")
+    system("tar xf cache/#{@firmwareFile} -C #{FIRMWARE_DIR}")
     system("sudo cp -aR --no-preserve=all #{FIRMWARE_DIR}/boot/* #{@bootfs}/")
     fail 'Could not copy over firmware files!' unless $?.success?
 
@@ -48,7 +50,7 @@ class FimrwareInstaller
   def checksum_matches?
     return true if @c.config[:firmware][:md5sum].nil?
 
-    sum = Digest::MD5.file('cache/firmware.tar.gz').hexdigest
+    sum = Digest::MD5.file("cache/#{@firmwareFile}").hexdigest
     @c.config[:firmware][:md5sum] == sum
   end
 
