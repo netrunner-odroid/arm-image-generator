@@ -34,9 +34,10 @@ class RootFS
       retry if retry_times < 3
     end
 
-    useradd = `tar tf cache/#{@rootfsFile} | grep sbin/useradd`.strip
-    components = useradd.split('usr')[0].split('/').count
-    ec = system("sudo tar xf cache/#{@rootfsFile} -p -s -C #{@target} --strip-components #{components}")
+    # In case a rootfs tar is a unicorn, one needs to adjust this accordingly
+    tar_args = ENV['ROOTFS_TAR_ARGS']
+    tar_args ||= '--strip-components 1'
+    ec = system("sudo tar xf cache/#{@rootfsFile} -p -s -C #{@target} #{tar_args}")
     fail 'Could not untar the rootfs!' unless ec
 
     begin
