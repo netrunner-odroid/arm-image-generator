@@ -28,8 +28,11 @@ class FimrwareInstaller
       retry if retry_times < 3
     end
 
-    system("tar xf cache/#{@firmwareFile} -C #{FIRMWARE_DIR}")
-    Dir["#{FIRMWARE_DIR}/**/*/boot"].each do |dir|
+    # In case a firmware tar is a unicorn, one needs to adjust this accordingly
+    tar_args = ENV['FIRMWARE_TAR_ARGS']
+    tar_args ||= '--strip-components 1'
+    system("tar xf cache/#{@firmwareFile} -C #{FIRMWARE_DIR} -p -s #{tar_args}")
+    Dir["#{FIRMWARE_DIR}/**/boot"].each do |dir|
       unless system("sudo cp -aR --no-preserve=all #{dir}/* #{@bootfs}/")
         fail 'Could not copy over firmware files!'
       end
@@ -47,7 +50,7 @@ class FimrwareInstaller
 
   def rsync(src, target)
     return unless Dir.exist? src
-    system("sudo rsync -r -t -p -o -g -x -l -H -D --numeric-ids -s #{src} #{target}")
+    system("sudo rsync -r -t -p -o -g -x -l -H -D --numeric-ids -s #{src}/ #{target}/")
   end
 
   def checksum_matches?
