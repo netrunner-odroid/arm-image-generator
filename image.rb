@@ -120,7 +120,7 @@ class Image
   def setup_btldr
     setup_bootconfig
 
-    if @c.config[:bootloader].nil? || @c.config[:bootloader][:config].nil?
+    if @c.config[:bootloader].nil? || @c.config[:bootloader][:uboot].nil?
       return
     end
 
@@ -163,8 +163,8 @@ class Image
     Mount.mount(@btldrmntpt) do |boot_dir|
       Mount.mount(@rootfsmntpt) do |rootfs_dir|
         # Setup bootargs via a config file if any
-        system("sudo mv #{f.path} #{boot_dir}/#{@c.config[:bootloader][:config][:dst]}") unless boot_dir.nil?
-        system("sudo mv #{f.path} #{rootfs_dir}/#{@c.config[:bootloader][:config][:dst]}") unless rootfs_dir.nil?
+        system("sudo cp #{f.path} #{boot_dir}/#{@c.config[:bootloader][:config][:dst]}") unless boot_dir.nil?
+        system("sudo cp #{f.path} #{rootfs_dir}/#{@c.config[:bootloader][:config][:dst]}") unless rootfs_dir.nil?
       end
     end
   end
