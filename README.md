@@ -93,6 +93,12 @@ can be accessed inside the erb file :
 * uInitrd      -- Highest initrd version found
 * c            -- ImageConfig class, can be used to access everything the board config
 
+## Useful env variables ##
+
+* FIRMWARE_TAR_ARGS : Allows you to specify additional arguments to tar when unpacking the firmware tar, useful when your tar needs special component stripping.
+
+* ROOTFS_TAR_ARGS : Same as FIRMWARE_TAR_ARGS, but for the rootfs.
+
 ## Licensing ##
 
 Everything is distributed under GPLv2.
