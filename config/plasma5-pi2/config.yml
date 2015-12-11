@@ -1,5 +1,5 @@
 ---
-  :release: vivid
+  :release: plasma5-pi2
   :size: 8G
   :parted: parted.txt
   :rootfs:
