@@ -1,6 +1,6 @@
 ---
   :release: netrunner-debian-yacy
-  :size: 5G
+  :size: 8G
   :parted: parted.txt
   :rootfs:
     :url: http://pangea-data.s3.amazonaws.com/dci/images/armhf/netrunner-debian-yacy/latest/live-image-armhf.tar.tar.gz
