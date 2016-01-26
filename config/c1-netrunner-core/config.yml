@@ -1,6 +1,6 @@
 ---
   :release: netrunner-core
-  :size: 8G
+  :size: 4G
   :parted: parted.txt
   :rootfs:
     :url: http://pangea-data.s3.amazonaws.com/dci/images/armhf/netrunner-core/latest/live-image-armhf.tar.tar.gz
