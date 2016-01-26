@@ -1,0 +1,48 @@
+---
+  :release: netrunner-core
+  :size: 8G
+  :parted: parted.txt
+  :rootfs:
+    :url: http://pangea-data.s3.amazonaws.com/dci/images/armhf/netrunner-core/latest/live-image-armhf.tar.tar.gz
+  :firmware:
+    :backend: apt
+    :keys:
+      - 5360FB9DAB19BAC9
+    :sources:
+      :c1: http://deb.odroid.in/c1/ trusty main
+      :odroid: http://deb.odroid.in/ trusty main
+      :dci_odroid: http://pangea-data.s3.amazonaws.com/dci/odroid/debian sid main
+    :packages:
+      # Kernel and some basic utilities
+      - linux-image-c1
+      - u-boot
+      - u-boot-tools
+      - bootini
+
+      # Special X11 packages for the ODROID
+      - mali-x11/unstable
+      - xserver-xorg-video-mali/unstable
+
+      # Calamares stuff
+      - calamares
+      - zram-config
+      - mintupdate
+      - calamares-branding
+
+      # Set resolution on boot script
+      - odroid-boot-services
+
+  :bootloader:
+    :config:
+      :src: boot.ini.erb
+      :dst: boot/boot.ini
+    :uboot:
+      :bl1:
+        :file: usr/share/c1_uboot/bl1.bin.hardkernel
+        :dd_opts: "bs=1 count=442"
+      :SPL:
+        :file: usr/share/c1_uboot/bl1.bin.hardkernel
+        :dd_opts: "bs=512 skip=1 seek=1"
+      :img:
+        :file: usr/share/c1_uboot/u-boot.bin
+        :dd_opts: "bs=512 seek=64"
