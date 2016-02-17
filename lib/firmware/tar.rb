@@ -21,7 +21,7 @@ class FimrwareInstaller
       unless File.exist?("cache/#{@firmwareFile}") && checksum_matches?
         system("wget -P cache/ #{@c.config[:firmware][:url]}")
       end
-      fail 'Checksum failed to match' unless checksum_matches?
+      raise 'Checksum failed to match' unless checksum_matches?
     rescue => e
       puts "Retrying download because #{e}"
       retry_times += 1
@@ -34,7 +34,7 @@ class FimrwareInstaller
     system("tar xf cache/#{@firmwareFile} -C #{FIRMWARE_DIR} -p -s #{tar_args}")
     Dir["#{FIRMWARE_DIR}/**/boot"].each do |dir|
       unless system("sudo cp -aR --no-preserve=all #{dir}/* #{@bootfs}/")
-        fail 'Could not copy over firmware files!'
+        raise 'Could not copy over firmware files!'
       end
     end
 

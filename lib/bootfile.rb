@@ -68,6 +68,7 @@ class BootFile
     blkid_probe
     uImage_probe
     uInitrd_probe
-    ERB.new(File.read("#{@c.config_dir}/#{@c.config[:bootloader][:config][:src]}")).result(binding)
+    file_path = "#{@c.config_dir}/#{@c.config[:bootloader][:config][:src]}"
+    ERB.new(File.read(file_path)).result(binding)
   end
 end

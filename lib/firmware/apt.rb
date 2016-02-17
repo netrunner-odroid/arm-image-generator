@@ -43,7 +43,7 @@ class FimrwareInstaller
   end
 
   def apt_install(pkg)
-    fail 'Failed to install' unless
+    raise 'Failed to install' unless
     run_in_chroot("sh -c \"DEBIAN_FRONTEND=noninteractive apt --force-yes -y install #{pkg}\"")
   end
 end

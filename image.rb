@@ -16,7 +16,7 @@ QEMU_ARM_STATIC = File.readlines(MISC_BINFMT).grep(/interpreter/)[0].split[-1]
 # Class to deal with image creation
 class Image
   def initialize(config)
-    fail 'Could not find arm interpreter' unless QEMU_ARM_STATIC
+    raise 'Could not find arm interpreter' unless QEMU_ARM_STATIC
     @c = config
   end
 
@@ -27,7 +27,7 @@ class Image
     File.delete(@filename) if File.exist? @filename
 
     # Create file
-    fail 'Cannot find qemu-img!' unless system('qemu-img',
+    raise 'Cannot find qemu-img!' unless system('qemu-img',
                                                'create',
                                                "#{@filename}",
                                                "#{@c.config[:size]}")
@@ -50,13 +50,13 @@ class Image
 
   def loop_setup
     @loop = `sudo losetup --show -f -P #{@filename}`.strip
-    fail 'Could not setup loop mounts.\
+    raise 'Could not setup loop mounts.\
           Make sure you have util-linux v2.21 or higher' unless $?.success?
 
     count = Dir["#{@loop}p*"].count
 
     if @c.config[:firmware][:backend] == 'tar' && count != 2
-      fail 'Incompatible partition/backend settings detected!'
+      raise 'Incompatible partition/backend settings detected!'
     end
 
     # FIXME: Figure out how to make this better
@@ -70,7 +70,7 @@ class Image
 
   def loop_teardown
     `sudo losetup -d #{@loop}`
-    fail 'Could not tear down loop mounts!' unless $?.success?
+    raise 'Could not tear down loop mounts!' unless $?.success?
   end
 
   def partition
@@ -120,9 +120,7 @@ class Image
   def setup_btldr
     setup_bootconfig
 
-    if @c.config[:bootloader].nil? || @c.config[:bootloader][:uboot].nil?
-      return
-    end
+    return if @c.config[:bootloader].nil? || @c.config[:bootloader][:uboot].nil?
 
     @c.config[:bootloader][:uboot].keys.each do |k|
       Mount.mount(@btldrmntpt) do |boot_dir|
@@ -155,7 +153,7 @@ class Image
       cmd = @c.config[:bootloader][:config][:cmd]
       cmd.gsub!(/@source@/, f.path)
       cmd.gsub!(/@dest@/, f_cmd.path)
-      fail "Failed to run #{cmd} on bootloader file!" unless
+      raise "Failed to run #{cmd} on bootloader file!" unless
            system(cmd)
       f = f_cmd
     end

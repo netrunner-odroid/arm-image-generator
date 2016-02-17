@@ -3,7 +3,7 @@ class FimrwareInstaller
     @c = config
     @dev = %w(sys proc dev)
     # Source the right backend
-    require_relative "#{@c.config[:firmware][:backend]}"
+    require_relative @c.config[:firmware][:backend].to_s
   end
 
   def run_in_chroot(cmd)
@@ -31,7 +31,7 @@ class FimrwareInstaller
 
   def unmount
     @dev.each do |d|
-      fail "Failed to unmount #{d}" unless system('sudo',  'umount', "#{@rootfs}/#{d}")
+      raise "Failed to unmount #{d}" unless system('sudo',  'umount', "#{@rootfs}/#{d}")
     end
   end
 

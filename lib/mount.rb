@@ -6,10 +6,10 @@ class Mount
 
     unless path.nil?
       mntdir = Dir.mktmpdir
-      fail 'Mounting partition failed!' unless system('sudo',
-                                                      'mount',
-                                                      path,
-                                                      mntdir)
+      raise 'Mounting partition failed!' unless system('sudo',
+                                                       'mount',
+                                                       path,
+                                                       mntdir)
     end
 
     yield mntdir
