@@ -5,6 +5,7 @@ require 'digest'
 require 'rubygems/package'
 require 'zlib'
 require 'uri'
+require 'fileutils'
 
 class RootFS
   def initialize(config)
@@ -19,19 +20,14 @@ class RootFS
     retry_times = 0
     Dir.mkdir('cache') unless Dir.exist?('cache')
 
-    @rootfsFile = File.basename(URI.parse(@c.config[:rootfs][:url]).path)
+    uri = URI.parse(@c.config[:rootfs][:url])
+    @rootfsFile = File.basename(uri.path)
 
     puts 'Downloading the rootfs'
-    # FIXME: Assume tar.gz format for now
-    begin
-      unless File.exist?("cache/#{@rootfsFile}") && checksum_matches?
-        system("axel -n 10 -a -o cache/ #{@c.config[:rootfs][:url]}")
-      end
-      fail 'Checksum failed to match' unless checksum_matches?
-    rescue => e
-      puts "Retrying download because #{e}"
-      retry_times += 1
-      retry if retry_times < 3
+    if uri.scheme == 'file'
+      FileUtils.cp(@rootfsFile, 'cache/')
+    else
+      download_rootfs
     end
 
     # In case a rootfs tar is a unicorn, one needs to adjust this accordingly
@@ -45,6 +41,20 @@ class RootFS
       configure
     ensure
       unmount
+    end
+  end
+
+  def download_rootfs
+    # FIXME: Assume tar.gz format for now
+    begin
+      unless File.exist?("cache/#{@rootfsFile}") && checksum_matches?
+        system("axel -n 10 -a -o cache/ #{@c.config[:rootfs][:url]}")
+      end
+      fail 'Checksum failed to match' unless checksum_matches?
+    rescue => e
+      puts "Retrying download because #{e}"
+      retry_times += 1
+      retry if retry_times < 3
     end
   end
 
