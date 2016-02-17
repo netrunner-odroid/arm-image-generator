@@ -17,15 +17,14 @@ class RootFS
     return unless @c.config[:rootfs]
 
     @target = target
-    retry_times = 0
     Dir.mkdir('cache') unless Dir.exist?('cache')
 
     uri = URI.parse(@c.config[:rootfs][:url])
-    @rootfsFile = File.basename(uri.path)
+    @rootfs_file = File.basename(uri.path)
 
     puts 'Downloading the rootfs'
     if uri.scheme == 'file'
-      FileUtils.cp(@rootfsFile, 'cache/')
+      FileUtils.cp(@rootfs_file, 'cache/')
     else
       download_rootfs
     end
@@ -33,8 +32,8 @@ class RootFS
     # In case a rootfs tar is a unicorn, one needs to adjust this accordingly
     tar_args = ENV['ROOTFS_TAR_ARGS']
     tar_args ||= '--strip-components 1'
-    ec = system("sudo tar xf cache/#{@rootfsFile} -p -s -C #{@target} #{tar_args}")
-    fail 'Could not untar the rootfs!' unless ec
+    ec = system("sudo tar xf cache/#{@rootfs_file} -p -s -C #{@target} #{tar_args}")
+    raise 'Could not untar the rootfs!' unless ec
 
     begin
       mount
@@ -45,12 +44,13 @@ class RootFS
   end
 
   def download_rootfs
+    retry_times = 0
     # FIXME: Assume tar.gz format for now
     begin
-      unless File.exist?("cache/#{@rootfsFile}") && checksum_matches?
+      unless File.exist?("cache/#{@rootfs_file}") && checksum_matches?
         system("axel -n 10 -a -o cache/ #{@c.config[:rootfs][:url]}")
       end
-      fail 'Checksum failed to match' unless checksum_matches?
+      raise 'Checksum failed to match' unless checksum_matches?
     rescue => e
       puts "Retrying download because #{e}"
       retry_times += 1
@@ -60,7 +60,7 @@ class RootFS
 
   def checksum_matches?
     return true if @c.config[:rootfs][:md5sum].nil?
-    sum = Digest::MD5.file("cache/#{@rootfsFile}").hexdigest
+    sum = Digest::MD5.file("cache/#{@rootfs_file}").hexdigest
     @c.config[:rootfs][:md5sum] == sum
   end
 
@@ -73,7 +73,7 @@ class RootFS
 
   def unmount
     @dev.each do |d|
-      system('sudo',  'umount', "#{@target}/#{d}")
+      system('sudo', 'umount', "#{@target}/#{d}")
     end
     system("sudo rm #{@target}/#{QEMU_ARM_STATIC}")
   end
@@ -87,18 +87,18 @@ class RootFS
 
     puts "Adding user #{@c.config[:login][:username]}"
     system("sudo chroot #{@target} useradd -m #{@c.config[:login][:username]}")
-    fail 'Could not add the user!' unless $?.success?
+    raise 'Could not add the user!' unless $?.success?
 
     puts 'Setting the password'
     # Mental password command
     pswdcmd = "sh -c \"echo \"#{@c.config[:login][:password]}:#{@c.config[:login][:username]}\" | chpasswd\""
     system("sudo chroot #{@target} #{pswdcmd}")
-    fail 'Could not add the user!' unless $?.success?
+    raise 'Could not add the user!' unless $?.success?
 
     @c.config[:login][:groups].each do |g|
       puts "Adding user to #{g} group"
       system("sudo chroot #{@target} usermod -a -G #{g} #{@c.config[:login][:username]}")
-      fail 'Could not add the user to the #{g} group!' unless $?.success?
+      raise 'Could not add the user to the #{g} group!' unless $?.success?
     end
   end
 end
