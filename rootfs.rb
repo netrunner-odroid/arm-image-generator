@@ -24,7 +24,7 @@ class RootFS
 
     puts 'Downloading the rootfs'
     if uri.scheme == 'file'
-      FileUtils.cp(@rootfs_file, 'cache/')
+      FileUtils.cp(uri.path, 'cache/')
     else
       download_rootfs
     end
