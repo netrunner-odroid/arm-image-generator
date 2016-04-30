@@ -36,6 +36,8 @@ class Image
       partition
       # loop device setup
       loop_setup
+      # Format fs
+      mkfs
       # Install rootfs
       setup_rootfs
       # Setup firmware and other stuff
@@ -80,7 +82,7 @@ class Image
   end
 
   def setup_firmware
-    puts 'Setting up the bootloader partition'
+    puts 'Setting up the firmware'
 
     # We only setup a separate the vfat partition if we have the tar backend
     if @c.config[:firmware][:backend] == 'tar'
@@ -103,10 +105,13 @@ class Image
     end
   end
 
+  def mkfs
+    system("sudo mkfs.ext4 -L ROOT -O ^64bit,^metadata_csum,uninit_bg #{@rootfsmntpt}")
+    system("sudo fsck #{@rootfsmntpt}")
+  end
+
   def setup_rootfs
     puts 'Setting up the rootfs partition'
-    system("sudo mkfs.ext4 #{@rootfsmntpt}")
-    system("sudo fsck.ext4 #{@rootfsmntpt}")
     install_rootfs
   end
 
