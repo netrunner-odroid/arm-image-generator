@@ -9,13 +9,17 @@ class FimrwareInstaller
   end
 
   def divert_files
-    system("sudo chroot #{@rootfs} dpkg-divert --rename --quiet --add /sbin/start-stop-daemon")
-    system("sudo chroot #{@rootfs} ln -s /bin/true /sbin/start-stop-daemon")
+    run_in_chroot('dpkg-divert --rename --quiet --add /sbin/start-stop-daemon')
+    run_in_chroot('dpkg-divert --rename --quiet --add /usr/sbin/invoke-rc.d')
+    run_in_chroot('ln -s /bin/true /sbin/start-stop-daemon')
+    run_in_chroot('ln -s /bin/true /usr/sbin/invoke-rc.d')
   end
 
   def undivert_files
-    system("sudo rm #{@rootfs}/sbin/start-stop-daemon")
-    run_in_chroot("dpkg-divert --rename --quiet --remove /sbin/start-stop-daemon")
+    run_in_chroot('rm /sbin/start-stop-daemon')
+    run_in_chroot('rm /usr/sbin/invoke-rc.d')
+    run_in_chroot('dpkg-divert --rename --quiet --remove /sbin/start-stop-daemon')
+    run_in_chroot('dpkg-divert --rename --quiet --remove /sbin/start-stop-daemon')
   end
 
   def add_sources
