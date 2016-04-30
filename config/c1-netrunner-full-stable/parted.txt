@@ -1,0 +1,5 @@
+mklabel msdos
+mkpart primary ext4 3072s -1s
+align-check optimal 1
+p
+q

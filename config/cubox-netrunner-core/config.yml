@@ -1,0 +1,31 @@
+---
+  :release: cubox-netrunner-core
+  :size: 4G
+  :parted: parted.txt
+  :rootfs:
+    :url: http://pangea-data.s3-ap-southeast-2.amazonaws.com/dci/images/stable/armhf/netrunner-core/latest/netrunner-debian-core_20160429.0815-armhf.tar.tar
+  :firmware:
+    :backend: apt
+    :sources:
+      :cubox_repo: http://repo.solid-build.xyz/debian/jessie/bsp-imx6/ ./
+    :packages:
+      - bsp-cuboxi
+      - kernel-3.14.y-fslc-imx6-sr
+      - u-boot-cubox-i
+      - irqbalance-imx
+      - imx-gpu-viv
+      - eglinfo-x11
+      - eglinfo-wl
+      - xserver-xorg-video-imx-viv
+      - firmware-brcm80211-
+  :bootloader:
+    :config:
+      :src: uEnv.txt.erb
+      :dst: boot/uEnv.txt
+    :uboot:
+      :SPL:
+        :file: boot/cubox-i-spl.bin
+        :dd_opts: "bs=1K seek=1"
+      :img:
+        :file: boot/u-boot.img
+        :dd_opts: "bs=1K seek=42"
